@@ -11,7 +11,8 @@ import {
   Wallet, 
   Settings as SettingsIcon, 
   LogOut,
-  X
+  X,
+  CreditCard
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,16 +24,16 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setIsOpen }) => {
   const menuItems = [
-    { id: 'dashboard', label: 'Báo cáo', icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Tổng quan', icon: LayoutDashboard },
     { id: 'rooms', label: 'Phòng trọ', icon: DoorOpen },
     { id: 'tenants', label: 'Khách thuê', icon: Users },
     { id: 'invoices', label: 'Hóa đơn', icon: Receipt },
-    { id: 'expenses', label: 'Chi phí', icon: Wallet },
+    { id: 'expenses', label: 'Sổ chi tiêu', icon: Wallet },
     { id: 'settings', label: 'Cấu hình', icon: SettingsIcon },
   ];
 
   const sidebarClasses = `
-    fixed inset-y-0 left-0 z-50 w-72 bg-[#0f172a] text-white flex flex-col shadow-2xl transition-transform duration-300 ease-in-out
+    fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-out shadow-2xl xl:shadow-none
     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
     xl:translate-x-0 xl:static xl:h-screen print:hidden
   `;
@@ -42,40 +43,51 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setIsOp
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 xl:hidden"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 xl:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       <aside className={sidebarClasses}>
-        <div className="p-8 flex items-center justify-between border-b border-white/5">
-          <div className="flex items-center gap-4">
-            <div className="bg-blue-600 p-2.5 rounded-2xl rotate-3"><DoorOpen size={24} /></div>
+        <div className="p-6 flex items-center justify-between h-20 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/30">
+              <DoorOpen size={24} />
+            </div>
             <div>
-              <span className="text-lg font-black block leading-none">NhaTroAdmin</span>
-              <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">v2.1 Pro</span>
+              <h1 className="text-lg font-bold text-slate-900 leading-none tracking-tight">NhaTro<span className="text-indigo-600">Admin</span></h1>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Management v2</span>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="xl:hidden text-slate-400 hover:text-white">
+          <button onClick={() => setIsOpen(false)} className="xl:hidden text-slate-400 hover:text-slate-600 transition-colors">
             <X size={24} />
           </button>
         </div>
 
-        <nav className="flex-1 px-6 py-10 space-y-3 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
+          <div className="mb-6 px-4">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Menu Chính</p>
+          </div>
           {menuItems.map(item => (
             <button 
               key={item.id} 
               onClick={() => setView(item.id as ViewType)}
-              className={`w-full flex items-center gap-4 px-5 py-4 rounded-[1.25rem] transition-all font-bold text-sm ${currentView === item.id ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:bg-white/5 hover:text-white'}`}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all font-medium text-sm group ${
+                currentView === item.id 
+                  ? 'bg-indigo-50 text-indigo-700 shadow-sm shadow-indigo-100' 
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+              }`}
             >
-              <item.icon size={20} /> {item.label}
+              <item.icon size={20} className={`transition-colors ${currentView === item.id ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+              {item.label}
+              {currentView === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600"></div>}
             </button>
           ))}
         </nav>
 
-        <div className="p-8 border-t border-white/5">
-          <button onClick={() => signOut(auth)} className="w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-red-400 hover:bg-red-500/10 transition-all text-xs font-black uppercase">
-            <LogOut size={18} /> Thoát hệ thống
+        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+          <button onClick={() => signOut(auth)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all text-sm font-medium">
+            <LogOut size={18} /> Đăng xuất
           </button>
         </div>
       </aside>

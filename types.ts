@@ -22,11 +22,27 @@ export interface Tenant {
   id: string;
   name: string;
   phone: string;
-  idCard: string;
-  hometown: string;
+  email?: string;
+  
+  // CCCD Information
+  idCard: string;              // Số CCCD
+  idCardFrontImage?: string;   // Ảnh mặt trước CCCD (base64 hoặc URL)
+  idCardBackImage?: string;    // Ảnh mặt sau CCCD (base64 hoặc URL)
+  dateOfBirth?: string;        // Ngày sinh
+  gender?: 'male' | 'female';  // Giới tính
+  
+  // Address
+  hometown: string;            // Quê quán
+  currentAddress?: string;     // Địa chỉ hiện tại
+  
+  // Emergency Contact
+  emergencyContact?: string;   // Số ĐT người thân
+  emergencyName?: string;      // Tên người thân
+  
+  // Rental Info
   roomId?: string;
   startDate: string;
-  contractDraft?: string; // Lưu bản thảo hợp đồng AI
+  contractDraft?: string;      // Lưu bản thảo hợp đồng AI
 }
 
 export interface Invoice {
@@ -79,6 +95,7 @@ export interface SystemSettings {
   bankAccount: string;
   bankOwner: string;
   houseRules: string; // Nội quy nhà trọ
+  qrPrefix?: string;  // Tiền tố nội dung chuyển khoản
 }
 
 export type ViewType = 'dashboard' | 'rooms' | 'tenants' | 'invoices' | 'expenses' | 'settings' | 'ai-assistant' | 'tenant-portal';

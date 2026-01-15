@@ -17,7 +17,10 @@ import {
   Edit3, UserPlus, FileText, Sparkles, ArrowRight,
   Receipt, Trash2, Info, LogOut
 } from 'lucide-react';
-import { generateRentalContract } from '../services/geminiService';
+import Card from '../components/UI/Card';
+import Button from '../components/UI/Button';
+import { generateRentalContract } from '../services/aiService';
+import { formatCurrency } from '../utils/formatUtils';
 
 interface RoomsViewProps {
   rooms: Room[];
@@ -174,35 +177,39 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
 
   return (
     <div className="space-y-6 md:space-y-8 animate-in fade-in duration-500">
-      <div className="bg-white p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 md:gap-6 items-center justify-between">
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16}/>
+
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
+        <div className="w-full md:w-auto flex flex-1 gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
             <input 
-              type="text" placeholder="Tìm tên phòng..." 
-              className="bg-slate-50 border-none rounded-xl pl-10 pr-4 py-3 md:py-4 w-full text-sm font-bold focus:ring-2 ring-blue-500" 
-              value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              type="text" 
+              placeholder="Tìm kiếm phòng..." 
+              className="w-full bg-white border border-slate-200 pl-11 pr-4 py-3 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <select 
-            className="bg-slate-50 border-none rounded-xl px-4 py-3 md:py-4 text-sm font-bold focus:ring-2 ring-blue-500 cursor-pointer" 
-            value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)}
+            className="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 cursor-pointer shadow-sm"
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value as any)}
           >
-            <option value="ALL">Tất cả</option>
-            <option value={RoomStatus.AVAILABLE}>Trống</option>
-            <option value={RoomStatus.OCCUPIED}>Đang ở</option>
+            <option value="ALL">Tất cả trạng thái</option>
+            <option value={RoomStatus.AVAILABLE}>Phòng Trống</option>
+            <option value={RoomStatus.OCCUPIED}>Đang Thuê</option>
           </select>
         </div>
-        <button 
+        <Button 
           onClick={() => { 
             setEditingRoom(null); 
             setRoomForm({ name: '', price: 2000000, depositAmount: 0, type: 'Phòng Thường', description: '', electricityMeter: 0, waterMeter: 0 }); 
             setIsRoomModalOpen(true); 
           }} 
-          className="w-full md:w-auto bg-blue-600 text-white px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-xs uppercase hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+          icon={Plus}
         >
-          <Plus size={18}/> Thêm phòng
-        </button>
+          Thêm phòng
+        </Button>
       </div>
 
       {filteredRooms.length === 0 ? (
@@ -212,72 +219,95 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
           description="Thử thay đổi bộ lọc hoặc thêm phòng mới vào danh sách quản lý của bạn." 
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
           {filteredRooms.map(r => (
-            <div key={r.id} className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl transition-all flex flex-col group relative overflow-hidden">
-              <div className="flex justify-between items-start mb-6">
-                <div className={`p-4 rounded-2xl ${r.status === RoomStatus.AVAILABLE ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
-                  <DoorOpen size={28}/>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                   <span className={`text-[8px] md:text-[9px] font-black px-3 py-1.5 rounded-full uppercase border ${r.status === RoomStatus.AVAILABLE ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
-                    {r.status === RoomStatus.AVAILABLE ? 'Phòng Trống' : 'Đang Thuê'}
-                  </span>
-                </div>
-              </div>
-              <h4 className="text-lg md:text-xl font-black text-slate-900 mb-6 truncate">{r.name}</h4>
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="bg-amber-50 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-3">
-                  <Zap size={16} className="text-amber-500 shrink-0"/>
-                  <div className="overflow-hidden">
-                    <p className="text-[7px] md:text-[8px] font-black text-amber-600 uppercase">Điện</p>
-                    <p className="text-xs md:text-sm font-black text-slate-800 truncate">{r.electricityMeter}</p>
+            <div key={r.id} className="group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
+              <div className={`h-1.5 w-full ${r.status === RoomStatus.AVAILABLE ? 'bg-emerald-500' : 'bg-indigo-500'}`} />
+              
+              <div className="p-5 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{r.name}</h4>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide mt-1 ${
+                      r.status === RoomStatus.AVAILABLE ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${r.status === RoomStatus.AVAILABLE ? 'bg-emerald-500' : 'bg-indigo-500'}`}></span>
+                      {r.status === RoomStatus.AVAILABLE ? 'Trống' : 'Đang thuê'}
+                    </span>
                   </div>
-                </div>
-                <div className="bg-blue-50 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-3">
-                  <Droplets size={16} className="text-blue-500 shrink-0"/>
-                  <div className="overflow-hidden">
-                    <p className="text-[7px] md:text-[8px] font-black text-blue-600 uppercase">Nước</p>
-                    <p className="text-xs md:text-sm font-black text-slate-800 truncate">{r.waterMeter}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-auto pt-6 border-t border-slate-100 flex justify-between items-center">
-                <div className="flex flex-col">
-                  <span className="text-lg md:text-xl font-black text-slate-900">{(r.price / 1000).toLocaleString()}k</span>
-                  <span className="text-[8px] md:text-[9px] text-slate-400 font-bold uppercase">đ/tháng</span>
-                </div>
-                <div className="flex gap-1.5 md:gap-2">
-                  {r.status === RoomStatus.AVAILABLE ? (
-                    <button onClick={() => { setSelectedRoomForCheckin(r); setIsCheckinModalOpen(true); }} className="bg-emerald-500 text-white p-2.5 md:p-3 rounded-xl hover:bg-emerald-600 transition-all shadow-md"><UserPlus size={18}/></button>
-                  ) : (
-                    <>
-                      <button 
-                        onClick={() => { 
-                          setSelectedRoomForInvoice(r); 
-                          setInvoiceForm({ ...invoiceForm, newElectricity: r.electricityMeter, newWater: r.waterMeter }); 
-                          setIsInvoiceModalOpen(true); 
-                        }} 
-                        className="bg-indigo-500 text-white p-2.5 md:p-3 rounded-xl hover:bg-indigo-600 transition-all shadow-md"
-                        title="Tính tiền tháng"
-                      >
-                        <Receipt size={18}/>
-                      </button>
-                      <button 
-                        onClick={() => handleCheckout(r)}
-                        className="bg-amber-500 text-white p-2.5 md:p-3 rounded-xl hover:bg-amber-600 transition-all shadow-md"
-                        title="Trả phòng"
-                      >
-                        <LogOut size={18}/>
-                      </button>
-                    </>
-                  )}
                   <button onClick={() => { 
                     setEditingRoom(r); 
                     setRoomForm({ name: r.name, price: r.price, depositAmount: r.depositAmount || 0, type: r.type, description: r.description || '', electricityMeter: r.electricityMeter || 0, waterMeter: r.waterMeter || 0 }); 
                     setIsRoomModalOpen(true); 
-                  }} className="bg-slate-100 text-slate-400 p-2.5 md:p-3 rounded-xl hover:bg-slate-200 transition-all"><Edit3 size={18}/></button>
-                  <button onClick={() => handleDeleteRoom(r)} className="bg-red-50 text-red-400 p-2.5 md:p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all"><Trash2 size={18}/></button>
+                  }} className="text-slate-300 hover:text-indigo-600 transition-colors bg-transparent p-1">
+                    <Edit3 size={16} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-slate-50 p-3 rounded-xl">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Zap size={14} className="text-amber-500"/>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">Điện</span>
+                    </div>
+                    <p className="text-sm font-bold text-slate-900 font-mono">{r.electricityMeter}</p>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Droplets size={14} className="text-blue-500"/>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">Nước</span>
+                    </div>
+                    <p className="text-sm font-bold text-slate-900 font-mono">{r.waterMeter}</p>
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div>
+                    <p className="text-lg font-bold text-slate-900">{formatCurrency(r.price)}</p>
+                    <p className="text-[10px] text-slate-400 font-medium">vnđ/tháng</p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {r.status === RoomStatus.AVAILABLE ? (
+                      <Button 
+                        onClick={() => { setSelectedRoomForCheckin(r); setIsCheckinModalOpen(true); }} 
+                        className="!p-2.5 !h-auto !min-h-0 rounded-lg !bg-emerald-600 hover:!bg-emerald-700"
+                        title="Check-in khách mới"
+                      >
+                        <UserPlus size={18}/>
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => { 
+                            setSelectedRoomForInvoice(r); 
+                            setInvoiceForm({ ...invoiceForm, newElectricity: r.electricityMeter, newWater: r.waterMeter }); 
+                            setIsInvoiceModalOpen(true); 
+                          }}
+                          className="!p-2.5 !h-auto !min-h-0 rounded-lg"
+                          title="Lập hóa đơn"
+                        >
+                          <Receipt size={18} />
+                        </Button>
+                        <Button
+                          onClick={() => handleCheckout(r)}
+                          variant="danger"
+                          className="!p-2.5 !h-auto !min-h-0 rounded-lg"
+                          title="Trả phòng"
+                        >
+                          <LogOut size={18} />
+                        </Button>
+                      </>
+                    )}
+                    <Button 
+                      onClick={() => handleDeleteRoom(r)} 
+                      variant="ghost" 
+                      className="!p-2.5 !h-auto !min-h-0 rounded-lg hover:!bg-rose-50 hover:!text-rose-500"
+                      title="Xóa phòng"
+                    >
+                      <Trash2 size={18}/>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -287,22 +317,67 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
 
       {/* MODALS giữ nguyên cấu trúc nhưng tối ưu padding mobile */}
       <Modal isOpen={isRoomModalOpen} onClose={() => setIsRoomModalOpen(false)} title={editingRoom ? "Cập nhật phòng" : "Thêm phòng mới"}>
-        <form onSubmit={handleSaveRoom} className="space-y-4 md:space-y-6">
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tên phòng / Số phòng</label>
-            <input type="text" placeholder="P.101" required value={roomForm.name} onChange={e => setRoomForm({...roomForm, name: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 md:px-6 py-3 md:py-4 font-bold focus:ring-2 ring-blue-500"/>
-          </div>
+        <form onSubmit={handleSaveRoom} className="space-y-4 md:space-y-5 max-h-[70vh] overflow-y-auto pr-2">
+          {/* Basic Info */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Giá thuê</label>
-              <input type="number" required value={roomForm.price} onChange={e => setRoomForm({...roomForm, price: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border-none rounded-xl px-4 md:px-6 py-3 md:py-4 font-bold focus:ring-2 ring-blue-500"/>
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tên phòng / Số phòng *</label>
+              <input type="text" placeholder="P.101" required value={roomForm.name} onChange={e => setRoomForm({...roomForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tiền cọc</label>
-              <input type="number" value={roomForm.depositAmount} onChange={e => setRoomForm({...roomForm, depositAmount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border-none rounded-xl px-4 md:px-6 py-3 md:py-4 font-bold text-indigo-600 focus:ring-2 ring-blue-500"/>
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Loại phòng</label>
+              <select value={roomForm.type} onChange={e => setRoomForm({...roomForm, type: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all">
+                <option value="Phòng Thường">Phòng Thường</option>
+                <option value="Phòng VIP">Phòng VIP</option>
+                <option value="Phòng Đôi">Phòng Đôi</option>
+                <option value="Studio">Studio</option>
+              </select>
             </div>
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-black uppercase shadow-xl hover:bg-blue-700 transition-all">Lưu thông tin</button>
+
+          {/* Price Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Giá thuê (đ/tháng) *</label>
+              <input type="number" required value={roomForm.price} onChange={e => setRoomForm({...roomForm, price: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tiền cọc (đ)</label>
+              <input type="number" value={roomForm.depositAmount} onChange={e => setRoomForm({...roomForm, depositAmount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
+            </div>
+          </div>
+
+          {/* Meter Readings */}
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-4">
+            <p className="text-xs font-bold text-amber-700 uppercase flex items-center gap-2">
+              <Zap size={14} /> Chỉ số đồng hồ (hiện tại)
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-amber-600 ml-1">Điện (kWh)</label>
+                <input type="number" value={roomForm.electricityMeter} onChange={e => setRoomForm({...roomForm, electricityMeter: parseInt(e.target.value) || 0})} className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:outline-none transition-all"/>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-blue-600 ml-1">Nước (m³)</label>
+                <input type="number" value={roomForm.waterMeter} onChange={e => setRoomForm({...roomForm, waterMeter: parseInt(e.target.value) || 0})} className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all"/>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mô tả / Ghi chú</label>
+            <textarea 
+              value={roomForm.description} 
+              onChange={e => setRoomForm({...roomForm, description: e.target.value})} 
+              placeholder="VD: Có ban công, máy lạnh, gần thang máy..."
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium min-h-[80px] resize-y focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"
+            />
+          </div>
+
+          <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black uppercase shadow-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
+            <Edit3 size={18}/> {editingRoom ? "Lưu thay đổi" : "Tạo phòng mới"}
+          </button>
         </form>
       </Modal>
 

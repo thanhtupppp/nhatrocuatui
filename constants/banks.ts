@@ -1,0 +1,16 @@
+export const SUPPORTED_BANKS = [
+  { id: 'MB', name: 'MB Bank', code: 'mbbank' },
+  { id: 'VCB', name: 'Vietcombank', code: 'vietcombank' },
+  { id: 'TCB', name: 'Techcombank', code: 'techcombank' },
+  { id: 'ACB', name: 'ACB', code: 'acb' },
+  { id: 'BIDV', name: 'BIDV', code: 'bidv' },
+  { id: 'VTB', name: 'Vietinbank', code: 'vietinbank' },
+  { id: 'TPB', name: 'TPBank', code: 'tpb' },
+  { id: 'VPB', name: 'VPBank', code: 'vpbank' },
+  { id: 'AGR', name: 'Agribank', code: 'agribank' },
+  { id: 'STB', name: 'Sacombank', code: 'sacombank' },
+  { id: 'HDB', name: 'HDBank', code: 'hdbank' },
+  { id: 'OCB', name: 'OCB', code: 'ocb' },
+  { id: 'MSB', name: 'MSB', code: 'msb' },
+  { id: 'VIB', name: 'VIB', code: 'vib' },
+];

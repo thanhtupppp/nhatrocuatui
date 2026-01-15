@@ -3,10 +3,14 @@ import React, { useState, useMemo } from 'react';
 import { updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Invoice, Room, Tenant, SystemSettings } from '../types';
-/* Added missing DoorOpen import */
-import { Receipt, CheckCircle, Trash2, Printer, Search, Zap, Droplets, Wallet, Calendar, DoorOpen } from 'lucide-react';
+import { Receipt, CheckCircle, Trash2, Printer, Search, Zap, Droplets, Wallet, Calendar, DoorOpen, Copy } from 'lucide-react';
 import Modal from '../components/UI/Modal';
 import EmptyState from '../components/UI/EmptyState';
+import Card from '../components/UI/Card';
+import Button from '../components/UI/Button';
+import { formatCurrency } from '../utils/formatUtils';
+import { VietQR } from '../components/UI/VietQR';
+import { SUPPORTED_BANKS } from '../constants/banks';
 
 interface InvoicesViewProps {
   invoices: Invoice[];
@@ -15,7 +19,7 @@ interface InvoicesViewProps {
   settings: SystemSettings;
 }
 
-const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants }) => {
+const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, settings }) => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -31,21 +35,22 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants })
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-       <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col md:flex-row gap-6 items-center">
+
+       <div className="flex flex-col md:flex-row gap-6 items-center">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
             <input 
               type="text" placeholder="Tìm theo số phòng, tên khách hoặc kỳ hóa đơn..." 
-              className="bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 w-full text-sm font-bold focus:ring-2 ring-blue-500" 
+              className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-6 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
               value={search} onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="bg-blue-50 px-6 py-4 rounded-2xl flex items-center gap-3">
-             <Wallet size={20} className="text-blue-600"/>
-             <span className="text-xs font-black text-blue-800 uppercase">
-               Chưa thu: {invoices.filter(i => !i.paid).reduce((a,c) => a+c.total, 0).toLocaleString()} đ
+          <Card className="!p-4 bg-indigo-50 !border-indigo-100 flex items-center gap-3">
+             <Wallet size={20} className="text-indigo-600"/>
+             <span className="text-xs font-bold text-indigo-800 uppercase">
+               Chưa thu: {formatCurrency(invoices.filter(i => !i.paid).reduce((a,c) => a+c.total, 0))}
              </span>
-          </div>
+          </Card>
        </div>
 
        {filteredInvoices.length === 0 ? (
@@ -55,56 +60,61 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants })
            description="Hệ thống chưa ghi nhận hóa đơn nào khớp với tìm kiếm của bạn." 
          />
        ) : (
-         <div className="grid grid-cols-1 gap-6">
+         <div className="grid grid-cols-1 gap-4 pb-20">
             {filteredInvoices.map(invoice => {
               const room = rooms.find(r => r.id === invoice.roomId);
               const tenant = tenants.find(t => t.id === room?.tenantId);
               
               return (
-                <div key={invoice.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-8 group hover:shadow-xl transition-all">
-                  <div className={`w-20 h-20 rounded-3xl flex flex-col items-center justify-center shrink-0 ${invoice.paid ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                    <span className="text-[10px] font-black uppercase">Tháng</span>
-                    <span className="text-2xl font-black leading-none">{invoice.month}</span>
+                <Card key={invoice.id} className="!p-6 flex flex-col md:flex-row items-center gap-6 group hover:shadow-lg transition-all">
+                  <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center shrink-0 ${invoice.paid ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                    <span className="text-[9px] font-bold uppercase opacity-70">Tháng</span>
+                    <span className="text-xl font-black leading-none">{invoice.month}</span>
                   </div>
                   
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h4 className="text-xl font-black text-slate-900 uppercase">{room?.name || 'Phòng đã xóa'}</h4>
-                      <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${invoice.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  <div className="flex-1 w-full text-center md:text-left">
+                    <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1">
+                      <h4 className="text-lg font-bold text-slate-900 uppercase">{room?.name || 'Phòng đã xóa'}</h4>
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit mx-auto md:mx-0 ${invoice.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                         {invoice.paid ? 'Đã thu' : 'Chờ thanh toán'}
                       </span>
                     </div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p className="text-xs font-medium text-slate-400">
                       Chủ hộ: {tenant?.name || 'Hồ sơ đã xóa'}
                     </p>
                   </div>
 
-                  <div className="text-right">
-                    <p className="text-[10px] text-slate-400 font-black uppercase mb-1">Thành tiền</p>
-                    <h3 className="text-2xl font-black text-slate-900">{invoice.total.toLocaleString()} đ</h3>
+                  <div className="text-center md:text-right">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Thành tiền</p>
+                    <h3 className="text-xl font-black text-slate-900">{formatCurrency(invoice.total)}</h3>
                   </div>
 
-                  <div className="flex gap-2">
-                    <button 
+                  <div className="flex gap-2 w-full md:w-auto justify-center">
+                    <Button 
                       onClick={() => { setSelectedInvoice(invoice); setIsPrintModalOpen(true); }}
-                      className="p-4 rounded-2xl bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                      variant="secondary"
+                      className="!p-3 rounded-lg"
+                      title="In hóa đơn"
                     >
-                      <Printer size={24} />
-                    </button>
-                    <button 
+                      <Printer size={20} />
+                    </Button>
+                    <Button 
                       onClick={async () => await updateDoc(doc(db, 'invoices', invoice.id), { paid: !invoice.paid })} 
-                      className={`p-4 rounded-2xl transition-all shadow-md ${invoice.paid ? 'bg-emerald-500 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}
+                      className={`!p-3 rounded-lg ${invoice.paid ? '!bg-emerald-500 hover:!bg-emerald-600 text-white' : '!bg-white border text-slate-400 hover:!bg-indigo-50 hover:text-indigo-600'}`}
+                      title={invoice.paid ? "Đánh dấu chưa thu" : "Đánh dấu đã thu"}
                     >
-                      <CheckCircle size={24} />
-                    </button>
-                    <button 
+                      <CheckCircle size={20} />
+                    </Button>
+                    <Button 
                       onClick={async () => { if(confirm("Xóa hóa đơn này vĩnh viễn?")) await deleteDoc(doc(db, 'invoices', invoice.id)) }}
-                      className="p-4 rounded-2xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                      variant="ghost"
+                      className="!p-3 rounded-lg hover:!bg-rose-50 hover:!text-rose-600"
+                      title="Xóa hóa đơn"
                     >
-                      <Trash2 size={24} />
-                    </button>
+                      <Trash2 size={20} />
+                    </Button>
                   </div>
-                </div>
+                </Card>
               );
             })}
          </div>
@@ -147,9 +157,9 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants })
                   </div>
 
                   <div className="p-4 border border-slate-100 rounded-2xl space-y-2">
-                    <div className="flex justify-between text-xs font-bold text-slate-600"><span>Internet & Rác:</span><span>{(selectedInvoice.internetFee + selectedInvoice.trashFee).toLocaleString()} đ</span></div>
-                    {selectedInvoice.otherFees > 0 && (
-                      <div className="flex justify-between text-xs font-bold text-slate-600"><span>Phụ phí phát sinh:</span><span>{selectedInvoice.otherFees.toLocaleString()} đ</span></div>
+                    <div className="flex justify-between text-xs font-bold text-slate-600"><span>Internet & Rác:</span><span>{((selectedInvoice.internetFee || 0) + (selectedInvoice.trashFee || 0)).toLocaleString()} đ</span></div>
+                    {(selectedInvoice.otherFees || 0) > 0 && (
+                      <div className="flex justify-between text-xs font-bold text-slate-600"><span>Phụ phí phát sinh:</span><span>{(selectedInvoice.otherFees || 0).toLocaleString()} đ</span></div>
                     )}
                   </div>
                 </div>
@@ -164,8 +174,81 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants })
                   {selectedInvoice.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                 </div>
              </div>
+
+             {/* VietQR Payment Integration */}
+             {!selectedInvoice.paid && settings.bankId && settings.bankAccount && (
+               <div className="flex flex-col gap-6 bg-slate-50 p-6 md:p-10 rounded-[2.5rem] border border-slate-100">
+                 <div className="flex flex-col md:flex-row gap-8 items-center">
+                   <div className="flex-1 space-y-6">
+                     <div>
+                       <h4 className="text-xl font-black text-slate-800 mb-2">Thanh toán nhanh</h4>
+                       <p className="text-sm text-slate-500 leading-relaxed">
+                         Quét mã VietQR để thanh toán tự động hoặc chuyển khoản thủ công theo thông tin bên dưới.
+                       </p>
+                     </div>
+                     
+                     <div className="space-y-3">
+                       <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                         <div className="flex justify-between items-center group">
+                           <div className="space-y-0.5">
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Số tài khoản</p>
+                             <p className="text-sm font-black text-slate-900">{settings.bankAccount}</p>
+                           </div>
+                           <button 
+                             onClick={() => { navigator.clipboard.writeText(settings.bankAccount); alert("Đã sao chép số tài khoản!"); }}
+                             className="p-2 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-lg transition-colors"
+                             title="Sao chép"
+                           >
+                             <Copy size={16} />
+                           </button>
+                         </div>
+                         
+                         <div className="border-t border-dashed border-slate-100 pt-3 flex justify-between items-center group">
+                           <div className="space-y-0.5">
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Nội dung chuyển khoản</p>
+                             <p className="text-sm font-black text-indigo-600">
+                               {`${settings.qrPrefix || 'TT TIEN PHONG'} ${rooms.find(r => r.id === selectedInvoice.roomId)?.name} THANG ${selectedInvoice.month}/${selectedInvoice.year}`}
+                             </p>
+                           </div>
+                           <button 
+                             onClick={() => { 
+                               const content = `${settings.qrPrefix || 'TT TIEN PHONG'} ${rooms.find(r => r.id === selectedInvoice.roomId)?.name} THANG ${selectedInvoice.month}/${selectedInvoice.year}`;
+                               navigator.clipboard.writeText(content); 
+                               alert("Đã sao chép nội dung chuyển khoản!");
+                             }}
+                             className="p-2 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-lg transition-colors"
+                             title="Sao chép"
+                           >
+                             <Copy size={16} />
+                           </button>
+                         </div>
+                       </div>
+                       
+                       <div className="flex flex-wrap gap-4 text-xs font-bold">
+                         <div className="flex items-center gap-2">
+                           <span className="text-slate-400 uppercase">Ngân hàng:</span> 
+                           <span className="text-slate-700">
+                             {SUPPORTED_BANKS.find(b => b.id === settings.bankId)?.name || settings.bankId} ({settings.bankId})
+                           </span>
+                         </div>
+                         <div className="flex items-center gap-2"><span className="text-slate-400 uppercase">Chủ hộ:</span> <span className="text-slate-700">{settings.bankOwner}</span></div>
+                       </div>
+                     </div>
+                   </div>
+
+                   <VietQR 
+                     bankId={settings.bankId}
+                     accountNo={settings.bankAccount}
+                     accountName={settings.bankOwner}
+                     amount={selectedInvoice.total}
+                     description={`${settings.qrPrefix || 'TT TIEN PHONG'} ${rooms.find(r => r.id === selectedInvoice.roomId)?.name} THANG ${selectedInvoice.month}/${selectedInvoice.year}`}
+                     className="!p-0 !bg-transparent !border-none !shadow-none"
+                   />
+                 </div>
+               </div>
+             )}
              
-             <div className="flex gap-4 print:hidden">
+             <div className="flex gap-4 no-print">
                <button onClick={() => window.print()} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-900 py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3 transition-all"><Printer size={20}/> In hóa đơn (P.Lien)</button>
                <button onClick={() => setIsPrintModalOpen(false)} className="px-8 border border-slate-200 text-slate-400 rounded-2xl font-black uppercase">Đóng</button>
              </div>

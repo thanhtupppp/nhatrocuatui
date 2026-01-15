@@ -45,7 +45,7 @@ const App: React.FC = () => {
     bankId: 'MB',
     bankAccount: '',
     bankOwner: '',
-    houseRules: '1. Giữ gìn vệ sinh chung.\n2. Không làm ồn sau 23h.\n3. Thanh toán tiền phòng đúng hạn.'
+    houseRules: ''
   });
 
   useEffect(() => {
@@ -56,9 +56,25 @@ const App: React.FC = () => {
     return unsubAuth;
   }, []);
 
+  const defaultSettings: SystemSettings = {
+    electricityRate: 3500,
+    waterRate: 15000,
+    internetFee: 100000,
+    trashFee: 20000,
+    bankId: 'MB',
+    bankAccount: '',
+    bankOwner: '',
+    houseRules: '1. Giữ gìn vệ sinh chung.\n2. Không làm ồn sau 23h.\n3. Thanh toán tiền phòng đúng hạn.'
+  };
+
   useEffect(() => {
     // Data fetch logic (Public for settings to generate QR)
-    const unsubS = onSnapshot(doc(db, 'settings', 'global'), (d) => d.exists() && setSettings(d.data() as SystemSettings));
+    const unsubS = onSnapshot(doc(db, 'settings', 'global'), (d) => {
+      if (d.exists()) {
+        // Merge with defaults to ensure all fields exist
+        setSettings({ ...defaultSettings, ...d.data() } as SystemSettings);
+      }
+    });
     const unsubR = onSnapshot(collection(db, 'rooms'), (s) => setRooms(s.docs.map(d => ({ id: d.id, ...d.data() } as Room))));
     const unsubT = onSnapshot(collection(db, 'tenants'), (s) => setTenants(s.docs.map(d => ({ id: d.id, ...d.data() } as Tenant))));
     const unsubI = onSnapshot(query(collection(db, 'invoices'), orderBy('createdAt', 'desc')), (s) => setInvoices(s.docs.map(d => ({ id: d.id, ...d.data() } as Invoice))));
@@ -85,16 +101,16 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-[#f8fafc] flex font-sans">
       <Sidebar currentView={view} setView={(v) => { setView(v); setIsSidebarOpen(false); }} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       
-      <div className="flex-1 xl:ml-72 flex flex-col min-w-0">
-        <Header view={view} userEmail={user.email} onMenuClick={() => setIsSidebarOpen(true)} />
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <Header view={view} userEmail={user.email} onMenuClick={() => setIsSidebarOpen(true)} invoices={invoices} />
 
-        <main className="p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto w-full print:p-0">
-          {view === 'dashboard' && <DashboardView rooms={rooms} invoices={invoices} expenses={expenses} tenants={tenants} setView={setView} />}
+        <main className="flex-1 p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto w-full overflow-y-auto custom-scrollbar print:p-0">
+          {view === 'dashboard' && <DashboardView rooms={rooms} invoices={invoices} expenses={expenses} setView={setView} />}
           {view === 'rooms' && <RoomsView rooms={rooms} tenants={tenants} settings={settings} />}
           {view === 'tenants' && <TenantsView tenants={tenants} rooms={rooms} />}
           {view === 'invoices' && <InvoicesView invoices={invoices} rooms={rooms} tenants={tenants} settings={settings} />}
           {view === 'expenses' && <ExpensesView expenses={expenses} />}
-          {view === 'settings' && <SettingsView settings={settings} />}
+          {view === 'settings' && <SettingsView key={settings.electricityRate} settings={settings} />}
         </main>
       </div>
     </div>

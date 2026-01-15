@@ -1,10 +1,12 @@
-
 import React, { useState, useMemo } from 'react';
 import { collection, addDoc, updateDoc, doc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Expense } from '../types';
+import { Wallet, Search, Plus, Edit3, Trash2, TrendingUp, FileText, Save } from 'lucide-react';
 import Modal from '../components/UI/Modal';
-import { Wallet, Search, Filter, Calendar, Tag, Plus, Edit3, Trash2, PieChart, ArrowRight, Save } from 'lucide-react';
+import EmptyState from '../components/UI/EmptyState';
+import Card from '../components/UI/Card';
+import Button from '../components/UI/Button';
 
 interface ExpensesViewProps {
   expenses: Expense[];
@@ -12,10 +14,6 @@ interface ExpensesViewProps {
 
 const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("ALL");
-  const [dateStart, setDateStart] = useState("");
-  const [dateEnd, setDateEnd] = useState("");
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [form, setForm] = useState<Omit<Expense, 'id' | 'createdAt'>>({
@@ -23,14 +21,9 @@ const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
   });
 
   const filtered = useMemo(() => {
-    return expenses.filter(e => {
-      const matchesSearch = e.title.toLowerCase().includes(search.toLowerCase());
-      const matchesCat = categoryFilter === "ALL" || e.category === categoryFilter;
-      const matchesStart = !dateStart || e.date >= dateStart;
-      const matchesEnd = !dateEnd || e.date <= dateEnd;
-      return matchesSearch && matchesCat && matchesStart && matchesEnd;
-    });
-  }, [expenses, search, categoryFilter, dateStart, dateEnd]);
+    return expenses.filter(e => e.title.toLowerCase().includes(search.toLowerCase()))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [expenses, search]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,76 +36,110 @@ const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
     } catch (err: any) { alert(err.message); }
   };
 
+  const currentMonthTotal = expenses
+    .filter(e => new Date(e.date).getMonth() === new Date().getMonth())
+    .reduce((a, b) => a + b.amount, 0);
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm space-y-6">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center"><Wallet size={24} /></div>
-            <div>
-              <h4 className="text-lg font-black text-slate-800 uppercase">Sổ chi tiêu</h4>
-              <p className="text-xs font-bold text-slate-400 uppercase">Tổng lọc: {filtered.reduce((a,c) => a+c.amount, 0).toLocaleString()} đ</p>
-            </div>
-          </div>
-          <button onClick={() => setIsModalOpen(true)} className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase hover:bg-black transition-all flex items-center justify-center gap-3">
-            <Plus size={18}/> Thêm khoản chi
-          </button>
+      <div className="flex flex-col md:flex-row gap-6 items-center">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
+          <input 
+            type="text" placeholder="Tìm kiếm khoản chi..." 
+            className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-6 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+            value={search} onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
-           <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16}/><input type="text" placeholder="Tìm..." className="bg-slate-50 border-none rounded-xl pl-10 pr-4 py-3 w-full text-sm font-bold" value={search} onChange={(e) => setSearch(e.target.value)}/></div>
-           <select className="bg-slate-50 border-none rounded-xl px-4 py-3 w-full text-sm font-bold" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-             <option value="ALL">Tất cả danh mục</option>
-             <option value="Sửa chữa">Sửa chữa</option>
-             <option value="Tiện ích">Tiện ích</option>
-             <option value="Khác">Khác</option>
-           </select>
-           <input type="date" className="bg-slate-50 border-none rounded-xl px-4 py-3 w-full text-sm font-bold" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
-           <input type="date" className="bg-slate-50 border-none rounded-xl px-4 py-3 w-full text-sm font-bold" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
-        </div>
+        <Card className="!p-4 bg-rose-50 !border-rose-100 flex items-center gap-3">
+            <TrendingUp size={20} className="text-rose-600"/>
+            <span className="text-xs font-bold text-rose-800 uppercase">
+              Tổng chi tháng này: {currentMonthTotal.toLocaleString()} đ
+            </span>
+        </Card>
+        <Button onClick={() => setIsModalOpen(true)} icon={Plus} className="w-full md:w-auto">
+          Ghi chép chi tiêu
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        {filtered.length === 0 ? (
-          <div className="py-24 text-center bg-white rounded-[3rem] border border-dashed border-slate-200"><PieChart size={48} className="mx-auto text-slate-200 mb-4" /><p className="text-xs font-black uppercase text-slate-300">Trống trải...</p></div>
-        ) : (
-          filtered.map(exp => (
-            <div key={exp.id} className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center gap-6 group">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-slate-50 text-slate-600`}>
-                <Tag size={20}/>
+      {filtered.length === 0 ? (
+        <EmptyState 
+          icon={Wallet} 
+          title="Sổ chi tiêu trống" 
+          description="Ghi lại các khoản chi phí vận hành để quản lý tài chính hiệu quả hơn." 
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+          {filtered.map(expense => (
+            <Card key={expense.id} className="!p-6 flex flex-col justify-between group hover:shadow-lg transition-all border-l-4 !border-l-rose-500">
+              <div className="mb-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="bg-rose-50 p-2 rounded-lg text-rose-600">
+                    <FileText size={20} />
+                  </div>
+                  <span className="text-[10px] font-black text-slate-400 uppercase bg-slate-50 px-2 py-1 rounded-md">
+                    {new Date(expense.date).toLocaleDateString('vi-VN')}
+                  </span>
+                </div>
+                <h4 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors line-clamp-2">{expense.title}</h4>
+                <p className="text-xs text-slate-400 mt-1 line-clamp-1">{expense.description || expense.category}</p>
               </div>
-              <div className="flex-1 text-center md:text-left">
-                <h4 className="text-lg font-black text-slate-900 uppercase">{exp.title}</h4>
-                <div className="flex justify-center md:justify-start gap-4 text-[10px] font-bold text-slate-400 uppercase mt-1">
-                  <span>{new Date(exp.date).toLocaleDateString('vi-VN')}</span>
-                  <span>{exp.category}</span>
+              
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
+                <span className="text-xl font-black text-rose-600">{expense.amount.toLocaleString()} đ</span>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => { setEditingExpense(expense); setForm({ ...expense }); setIsModalOpen(true); }}
+                    variant="ghost"
+                    className="!p-2 hover:!bg-blue-50 hover:!text-blue-600 h-auto"
+                  >
+                    <Edit3 size={18} />
+                  </Button>
+                  <Button 
+                    onClick={async () => { if(confirm("Xóa khoản chi này?")) await deleteDoc(doc(db, 'expenses', expense.id)) }}
+                    variant="ghost"
+                    className="!p-2 hover:!bg-rose-50 hover:!text-rose-600 h-auto"
+                  >
+                    <Trash2 size={18} />
+                  </Button>
                 </div>
               </div>
-              <div className="text-right">
-                <h3 className="text-xl font-black text-red-600">-{exp.amount.toLocaleString()} đ</h3>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => { setEditingExpense(exp); setForm({ ...exp }); setIsModalOpen(true); }} className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-all"><Edit3 size={18}/></button>
-                <button onClick={async () => { if(confirm("Xóa?")) await deleteDoc(doc(db, 'expenses', exp.id)) }} className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-red-50 hover:text-red-600 transition-all"><Trash2 size={18}/></button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingExpense ? "Sửa khoản chi" : "Thêm khoản chi"}>
+      <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingExpense(null); }} title={editingExpense ? "Cập nhật khoản chi" : "Ghi chép khoản chi mới"}>
         <form onSubmit={handleSave} className="space-y-6">
-          <input type="text" placeholder="Tên khoản chi" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold"/>
+          <div className="space-y-1">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tên khoản chi</label>
+            <input type="text" required placeholder="Ví dụ: Sửa bóng đèn" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500"/>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mô tả chi tiết</label>
+            <input type="text" placeholder="Ghi chú thêm..." value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500"/>
+          </div>
           <div className="grid grid-cols-2 gap-4">
-            <input type="number" placeholder="Số tiền" required value={form.amount} onChange={e => setForm({...form, amount: parseInt(e.target.value)})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-red-600"/>
-            <select value={form.category} onChange={e => setForm({...form, category: e.target.value as any})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Số tiền</label>
+              <input type="number" required value={form.amount} onChange={e => setForm({...form, amount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold text-rose-600 focus:ring-2 ring-blue-500"/>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ngày chi</label>
+              <input type="date" required value={form.date} onChange={e => setForm({...form, date: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500"/>
+            </div>
+          </div>
+           <div className="space-y-1">
+            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Danh mục</label>
+            <select value={form.category} onChange={e => setForm({...form, category: e.target.value as any})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500">
               <option value="Sửa chữa">Sửa chữa</option>
               <option value="Tiện ích">Tiện ích</option>
               <option value="Khác">Khác</option>
             </select>
           </div>
-          <input type="date" required value={form.date} onChange={e => setForm({...form, date: e.target.value})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold"/>
-          <button type="submit" className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase shadow-xl flex items-center justify-center gap-2"><Save size={20}/> Lưu thông tin chi phí</button>
+          <Button type="submit" className="w-full !bg-rose-600 hover:!bg-rose-700 !shadow-lg">
+            <Save size={18} className="mr-2"/> Lưu khoản chi
+          </Button>
         </form>
       </Modal>
     </div>
