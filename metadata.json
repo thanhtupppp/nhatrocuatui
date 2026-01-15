@@ -1,0 +1,7 @@
+{
+  "name": "NhaTroCuaTui - Rental Management",
+  "description": "A comprehensive rental management system for landlords to manage rooms, tenants, and monthly invoices seamlessly.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
