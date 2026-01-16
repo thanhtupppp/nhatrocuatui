@@ -464,7 +464,7 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
                   {viewingTenant.idCardFrontImage && (
                     <div className="space-y-2">
                       <p className="text-[10px] text-slate-400 font-black uppercase text-center">--- Mặt trước ---</p>
-                      <div className="relative group overflow-hidden rounded-2xl border-2 border-slate-100 shadow-lg">
+                      <div className="relative group overflow-hidden rounded-2xl border-2 border-slate-100 dark:border-slate-700 shadow-lg">
                         <img src={viewingTenant.idCardFrontImage} alt="CCCD Front" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"/>
                       </div>
                     </div>
@@ -472,7 +472,7 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
                   {viewingTenant.idCardBackImage && (
                     <div className="space-y-2">
                       <p className="text-[10px] text-slate-400 font-black uppercase text-center pt-2">--- Mặt sau ---</p>
-                      <div className="relative group overflow-hidden rounded-2xl border-2 border-slate-100 shadow-lg">
+                      <div className="relative group overflow-hidden rounded-2xl border-2 border-slate-100 dark:border-slate-700 shadow-lg">
                         <img src={viewingTenant.idCardBackImage} alt="CCCD Back" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"/>
                       </div>
                     </div>
