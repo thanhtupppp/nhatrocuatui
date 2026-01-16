@@ -134,7 +134,7 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
           <input 
             type="text" placeholder="Tìm tên, SĐT hoặc CCCD..." 
-            className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-6 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-12 pr-6 py-3 text-sm font-medium dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
             value={search} onChange={(e) => setSearch(e.target.value)}
           />
         </div>
@@ -160,13 +160,13 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
             return (
               <Card key={t.id} className="!p-6 flex flex-col group relative overflow-hidden">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center font-black text-xl uppercase shadow-sm">
+                  <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center font-black text-xl uppercase shadow-sm">
                     {t.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-900 uppercase truncate max-w-[150px] group-hover:text-indigo-600 transition-colors">{t.name}</h4>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white uppercase truncate max-w-[150px] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{t.name}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`w-2 h-2 rounded-full ${t.roomId ? 'bg-indigo-500' : 'bg-slate-300'}`}></span>
+                      <span className={`w-2 h-2 rounded-full ${t.roomId ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-slate-600'}`}></span>
                       <p className="text-[10px] font-bold text-slate-400 uppercase">
                         {currentRoom ? `Phòng ${currentRoom.name}` : 'Danh sách chờ'}
                       </p>
@@ -175,13 +175,13 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
                 </div>
                 
                 <div className="space-y-3 mb-8 flex-1">
-                  <div className="flex items-center gap-3 text-slate-500 hover:text-indigo-600 transition-colors">
+                  <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                     <Phone size={16}/> <span className="text-sm font-medium">{t.phone}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-slate-500">
+                  <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                     <Shield size={16}/> <span className="text-sm font-medium">{t.idCard}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-slate-500">
+                  <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                     <MapPin size={16}/> <span className="text-sm font-medium">{t.hometown}</span>
                   </div>
                   {t.idCardFrontImage && (
@@ -192,7 +192,7 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
                   )}
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 flex gap-2">
+                <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex gap-2">
                   <Button 
                     onClick={() => setViewingTenant(t)}
                     variant="ghost"
@@ -211,7 +211,7 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
                   <Button 
                     onClick={() => handleDelete(t)}
                     variant="ghost"
-                    className="!py-2.5 rounded-lg hover:!bg-rose-50 hover:!text-rose-600"
+                    className="!py-2.5 rounded-lg hover:!bg-rose-50 hover:!text-rose-600 dark:hover:!bg-rose-900/20"
                   >
                     <Trash2 size={18}/>
                   </Button>
@@ -227,31 +227,31 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
         <form onSubmit={handleSave} className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
           {/* Basic Info */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white flex items-center gap-2">
               <User size={16} className="text-indigo-500" /> Thông tin cơ bản
             </h4>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Họ và tên khách *</label>
-              <input type="text" placeholder="Nguyễn Văn A" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              <input type="text" placeholder="Nguyễn Văn A" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Số điện thoại *</label>
-                <input type="tel" placeholder="090..." required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="tel" placeholder="090..." required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email</label>
-                <input type="email" placeholder="email@..." value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="email" placeholder="email@..." value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ngày sinh</label>
-                <input type="date" value={form.dateOfBirth} onChange={e => setForm({...form, dateOfBirth: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="date" value={form.dateOfBirth} onChange={e => setForm({...form, dateOfBirth: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Giới tính</label>
-                <select value={form.gender} onChange={e => setForm({...form, gender: e.target.value as 'male' | 'female' | ''})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500">
+                <select value={form.gender} onChange={e => setForm({...form, gender: e.target.value as 'male' | 'female' | ''})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500">
                   <option value="">-- Chọn --</option>
                   <option value="male">Nam</option>
                   <option value="female">Nữ</option>
@@ -261,13 +261,13 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
           </div>
 
           {/* CCCD Section */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white flex items-center gap-2">
               <Shield size={16} className="text-indigo-500" /> Thông tin CCCD
             </h4>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Số CCCD / CMND *</label>
-              <input type="text" placeholder="079..." required value={form.idCard} onChange={e => setForm({...form, idCard: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              <input type="text" placeholder="079..." required value={form.idCard} onChange={e => setForm({...form, idCard: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <ImageUpload
@@ -286,70 +286,70 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
           </div>
 
           {/* Address Section */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white flex items-center gap-2">
               <MapPin size={16} className="text-indigo-500" /> Địa chỉ
             </h4>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Quê quán</label>
-              <input type="text" placeholder="TP. Hồ Chí Minh" value={form.hometown} onChange={e => setForm({...form, hometown: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              <input type="text" placeholder="TP. Hồ Chí Minh" value={form.hometown} onChange={e => setForm({...form, hometown: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Địa chỉ thường trú</label>
-              <input type="text" placeholder="123 Nguyễn Văn Linh, Q.7" value={form.currentAddress} onChange={e => setForm({...form, currentAddress: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              <input type="text" placeholder="123 Nguyễn Văn Linh, Q.7" value={form.currentAddress} onChange={e => setForm({...form, currentAddress: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nghề nghiệp</label>
-              <input type="text" placeholder="Nhân viên văn phòng..." value={form.occupation} onChange={e => setForm({...form, occupation: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              <input type="text" placeholder="Nhân viên văn phòng..." value={form.occupation} onChange={e => setForm({...form, occupation: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
             </div>
           </div>
 
           {/* Vehicle Section */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white flex items-center gap-2">
               <Car size={16} className="text-indigo-500" /> Thông tin phương tiện
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Loại xe</label>
-                <input type="text" placeholder="Honda Vision..." value={form.vehicleType} onChange={e => setForm({...form, vehicleType: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="text" placeholder="Honda Vision..." value={form.vehicleType} onChange={e => setForm({...form, vehicleType: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Biển số xe</label>
-                <input type="text" placeholder="59-X1 12345..." value={form.licensePlate} onChange={e => setForm({...form, licensePlate: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="text" placeholder="59-X1 12345..." value={form.licensePlate} onChange={e => setForm({...form, licensePlate: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
             </div>
           </div>
 
           {/* Emergency Contact */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white flex items-center gap-2">
               <Heart size={16} className="text-rose-500" /> Liên hệ khẩn cấp
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tên người thân</label>
-                <input type="text" placeholder="Nguyễn Văn B" value={form.emergencyName} onChange={e => setForm({...form, emergencyName: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="text" placeholder="Nguyễn Văn B" value={form.emergencyName} onChange={e => setForm({...form, emergencyName: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-1">SĐT người thân</label>
-                <input type="tel" placeholder="090..." value={form.emergencyContact} onChange={e => setForm({...form, emergencyContact: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+                <input type="tel" placeholder="090..." value={form.emergencyContact} onChange={e => setForm({...form, emergencyContact: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
               </div>
             </div>
           </div>
 
           {/* Rental Info */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white flex items-center gap-2">
               <Calendar size={16} className="text-indigo-500" /> Thông tin thuê
             </h4>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ngày bắt đầu thuê</label>
-              <input type="date" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              <input type="date" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500"/>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ghi chú</label>
-              <textarea placeholder="Ví dụ: Khách ở sạch sẽ, hay đi làm về muộn..." rows={3} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500 resize-none"/>
+              <textarea placeholder="Ví dụ: Khách ở sạch sẽ, hay đi làm về muộn..." rows={3} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white focus:ring-2 ring-indigo-500 resize-none"/>
             </div>
           </div>
 
@@ -364,18 +364,18 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
         {viewingTenant && (
           <div className="space-y-6 max-h-[85vh] overflow-y-auto pr-2 pb-4">
             {/* Header */}
-            <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/50 rounded-2xl shadow-sm">
-              <div className="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-indigo-50">
+            <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/40 dark:to-slate-900 border border-indigo-100/50 dark:border-indigo-500/20 rounded-2xl shadow-sm">
+              <div className="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-indigo-50 dark:ring-indigo-900/30">
                 {viewingTenant.name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-xl font-bold text-slate-900 truncate uppercase tracking-tight">{viewingTenant.name}</h3>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white truncate uppercase tracking-tight">{viewingTenant.name}</h3>
                 <div className="flex items-center gap-3 mt-1.5">
-                  <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase rounded-full">
+                  <span className="px-2.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-black uppercase rounded-full">
                     {viewingTenant.gender === 'male' ? 'Nam' : viewingTenant.gender === 'female' ? 'Nữ' : 'Chưa xác định'}
                   </span>
                   {rooms.find(r => r.id === viewingTenant.roomId) && (
-                    <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full">
+                    <span className="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-black uppercase rounded-full">
                       Phòng {rooms.find(r => r.id === viewingTenant.roomId)?.name}
                     </span>
                   )}
@@ -387,72 +387,72 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
             <div className="grid grid-cols-2 gap-x-8 gap-y-6 px-1">
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Phone size={12} className="text-indigo-400"/> Số điện thoại</p>
-                <p className="text-sm font-bold text-slate-700">{viewingTenant.phone}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{viewingTenant.phone}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Mail size={12} className="text-indigo-400"/> Email</p>
-                <p className="text-sm font-bold text-slate-700">{viewingTenant.email || 'Chưa cập nhật'}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{viewingTenant.email || 'Chưa cập nhật'}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Shield size={12} className="text-indigo-400"/> Số CCCD / CMND</p>
-                <p className="text-sm font-bold text-slate-700 line-clamp-1">{viewingTenant.idCard}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200 line-clamp-1">{viewingTenant.idCard}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Calendar size={12} className="text-indigo-400"/> Ngày sinh</p>
-                <p className="text-sm font-bold text-slate-700">{viewingTenant.dateOfBirth || 'Chưa cập nhật'}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{viewingTenant.dateOfBirth || 'Chưa cập nhật'}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Briefcase size={12} className="text-indigo-400"/> Nghề nghiệp</p>
-                <p className="text-sm font-bold text-slate-700">{viewingTenant.occupation || 'Chưa cập nhật'}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{viewingTenant.occupation || 'Chưa cập nhật'}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Calendar size={12} className="text-indigo-400"/> Ngày bắt đầu thuê</p>
-                <p className="text-sm font-bold text-slate-700">{viewingTenant.startDate ? formatDate(viewingTenant.startDate) : 'Chưa cập nhật'}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{viewingTenant.startDate ? formatDate(viewingTenant.startDate) : 'Chưa cập nhật'}</p>
               </div>
             </div>
 
             {/* Address Info */}
-            <div className="space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><MapPin size={12} className="text-indigo-400"/> Quê quán</p>
-                <p className="text-sm font-bold text-slate-700">{viewingTenant.hometown || 'Chưa cập nhật'}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{viewingTenant.hometown || 'Chưa cập nhật'}</p>
               </div>
-              <div className="space-y-1 pt-3 border-t border-slate-200/50">
+              <div className="space-y-1 pt-3 border-t border-slate-200/50 dark:border-slate-700/50">
                 <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><MapPin size={12} className="text-indigo-400"/> Địa chỉ thường trú</p>
-                <p className="text-sm font-bold text-slate-700 leading-relaxed">{viewingTenant.currentAddress || 'Chưa cập nhật'}</p>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200 leading-relaxed">{viewingTenant.currentAddress || 'Chưa cập nhật'}</p>
               </div>
             </div>
 
             {/* Vehicle Info */}
             {(viewingTenant.vehicleType || viewingTenant.licensePlate) && (
-              <div className="grid grid-cols-2 gap-4 p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl shadow-sm">
+              <div className="grid grid-cols-2 gap-4 p-4 bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl shadow-sm">
                 <div className="space-y-1">
                   <p className="text-[10px] text-indigo-400 font-black uppercase flex items-center gap-1.5"><Car size={12}/> Loại xe</p>
-                  <p className="text-sm font-bold text-indigo-900">{viewingTenant.vehicleType || 'Chưa cập nhật'}</p>
+                  <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300">{viewingTenant.vehicleType || 'Chưa cập nhật'}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] text-indigo-400 font-black uppercase flex items-center gap-1.5"><Car size={12}/> Biển số xe</p>
-                  <p className="text-sm font-bold text-indigo-900 uppercase">{viewingTenant.licensePlate || 'Chưa cập nhật'}</p>
+                  <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 uppercase">{viewingTenant.licensePlate || 'Chưa cập nhật'}</p>
                 </div>
               </div>
             )}
 
             {/* Emergency Contact */}
             {(viewingTenant.emergencyName || viewingTenant.emergencyContact) && (
-              <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl shadow-sm">
+              <div className="p-4 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-500/20 rounded-2xl shadow-sm">
                 <p className="text-[10px] text-rose-400 font-black uppercase flex items-center gap-1.5 mb-2"><Heart size={12}/> Liên hệ khẩn cấp</p>
                 <div className="flex justify-between items-center">
-                  <p className="text-sm font-bold text-rose-900">{viewingTenant.emergencyName || 'Chưa cập nhật'}</p>
-                  <p className="text-sm font-bold text-rose-600">{viewingTenant.emergencyContact}</p>
+                  <p className="text-sm font-bold text-rose-900 dark:text-rose-300">{viewingTenant.emergencyName || 'Chưa cập nhật'}</p>
+                  <p className="text-sm font-bold text-rose-600 dark:text-rose-400">{viewingTenant.emergencyContact}</p>
                 </div>
               </div>
             )}
 
             {/* Notes */}
             {viewingTenant.notes && (
-              <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl shadow-sm">
+              <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-500/20 rounded-2xl shadow-sm">
                 <p className="text-[10px] text-amber-500 font-black uppercase flex items-center gap-1.5 mb-2"><FileText size={12}/> Ghi chú</p>
-                <p className="text-sm font-medium text-amber-800 leading-relaxed whitespace-pre-wrap">{viewingTenant.notes}</p>
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300 leading-relaxed whitespace-pre-wrap">{viewingTenant.notes}</p>
               </div>
             )}
 
