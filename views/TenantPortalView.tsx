@@ -284,49 +284,49 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
                       <div className="px-8 pb-8 pt-0 border-t border-slate-100 dark:border-slate-800 animate-in slide-in-from-top-2 duration-300">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 mt-4">Chi tiết hóa đơn</p>
                         <div className="space-y-3">
-                          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                          <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
                             <div className="flex items-center gap-3">
                               <Home size={16} className="text-indigo-500"/>
-                              <span className="font-bold text-slate-700">Tiền phòng</span>
+                              <span className="font-bold text-slate-700 dark:text-slate-300">Tiền phòng</span>
                             </div>
-                            <span className="font-black text-slate-900">{inv.rentAmount.toLocaleString()} đ</span>
+                            <span className="font-black text-slate-900 dark:text-white">{inv.rentAmount.toLocaleString()} đ</span>
                           </div>
-                          <div className="flex items-center justify-between p-4 bg-amber-50/50 rounded-2xl">
+                          <div className="flex items-center justify-between p-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-2xl">
                             <div className="flex items-center gap-3">
                               <Zap size={16} className="text-amber-500"/>
                               <div>
-                                <span className="font-bold text-slate-700">Điện</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Điện</span>
                                 <span className="text-[10px] text-slate-400 font-bold ml-2">({inv.oldElectricity} → {inv.newElectricity} = {elecUsage} kWh)</span>
                               </div>
                             </div>
-                            <span className="font-black text-amber-600">{elecCost.toLocaleString()} đ</span>
+                            <span className="font-black text-amber-600 dark:text-amber-400">{elecCost.toLocaleString()} đ</span>
                           </div>
-                          <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl">
+                          <div className="flex items-center justify-between p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl">
                             <div className="flex items-center gap-3">
-                              <Droplets size={16} className="text-blue-500"/>
-                              <div>
-                                <span className="font-bold text-slate-700">Nước</span>
-                                <span className="text-[10px] text-slate-400 font-bold ml-2">({inv.oldWater} → {inv.newWater} = {waterUsage} m³)</span>
-                              </div>
+                               <Droplets size={16} className="text-blue-500"/>
+                               <div>
+                                 <span className="font-bold text-slate-700 dark:text-slate-300">Nước</span>
+                                 <span className="text-[10px] text-slate-400 font-bold ml-2">({inv.oldWater} → {inv.newWater} = {waterUsage} m³)</span>
+                               </div>
                             </div>
-                            <span className="font-black text-blue-600">{waterCost.toLocaleString()} đ</span>
+                            <span className="font-black text-blue-600 dark:text-blue-400">{waterCost.toLocaleString()} đ</span>
                           </div>
                           {(inv.internetFee > 0 || inv.trashFee > 0) && (
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
                               <div className="flex items-center gap-3">
                                 <Wifi size={16} className="text-slate-500"/>
-                                <span className="font-bold text-slate-700">Wifi + Rác</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Wifi + Rác</span>
                               </div>
-                              <span className="font-black text-slate-900">{(inv.internetFee + inv.trashFee).toLocaleString()} đ</span>
+                              <span className="font-black text-slate-900 dark:text-white">{(inv.internetFee + inv.trashFee).toLocaleString()} đ</span>
                             </div>
                           )}
                           {inv.otherFees > 0 && (
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
                               <div className="flex items-center gap-3">
                                 <Receipt size={16} className="text-slate-500"/>
-                                <span className="font-bold text-slate-700">Phí khác</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Phí khác</span>
                               </div>
-                              <span className="font-black text-slate-900">{inv.otherFees.toLocaleString()} đ</span>
+                              <span className="font-black text-slate-900 dark:text-white">{inv.otherFees.toLocaleString()} đ</span>
                             </div>
                           )}
                         </div>
@@ -461,8 +461,8 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
       <Modal isOpen={isQRModalOpen} onClose={() => setIsQRModalOpen(false)} title="Thanh toán VietQR" maxWidth="max-w-md">
         {selectedInvoice && (
           <div className="space-y-8 text-center">
-            <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
-               <img src={getVietQRUrl(selectedInvoice)} alt="VietQR" className="w-full h-auto rounded-2xl shadow-lg border-4 border-white" />
+            <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700">
+               <img src={getVietQRUrl(selectedInvoice)} alt="VietQR" className="w-full h-auto rounded-2xl shadow-lg border-4 border-white dark:border-slate-600" />
             </div>
             <div className="space-y-2">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Tổng số tiền</p>
@@ -471,7 +471,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
                 <AlertTriangle size={18}/> <span className="text-[10px] font-black uppercase">Quét QR bằng mọi ứng dụng ngân hàng</span>
               </div>
             </div>
-            <button onClick={() => setIsQRModalOpen(false)} className="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-black uppercase text-xs">Đã hiểu, đóng cửa sổ</button>
+            <button onClick={() => setIsQRModalOpen(false)} className="w-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 py-4 rounded-2xl font-black uppercase text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Đã hiểu, đóng cửa sổ</button>
           </div>
         )}
       </Modal>

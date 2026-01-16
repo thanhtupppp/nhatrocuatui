@@ -123,7 +123,7 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
        <Modal isOpen={isPrintModalOpen} onClose={() => setIsPrintModalOpen(false)} title="Hóa đơn tiền phòng" maxWidth="max-w-xl">
          {selectedInvoice && (
            <div className="space-y-8 print:p-0">
-             <div className="border-b-2 border-slate-100 pb-8 space-y-6">
+             <div className="border-b-2 border-slate-100 dark:border-slate-800 pb-8 space-y-6">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-3xl font-black uppercase text-slate-900">{rooms.find(r => r.id === selectedInvoice.roomId)?.name}</h3>
@@ -138,18 +138,18 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                  <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
                     <div className="flex items-center gap-3"><DoorOpen size={18} className="text-slate-400"/> <span className="text-sm font-bold text-slate-700">Tiền thuê phòng</span></div>
                     <span className="font-black text-slate-900">{selectedInvoice.rentAmount.toLocaleString()} đ</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-amber-50 rounded-2xl space-y-2">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl space-y-2">
                        <div className="flex items-center gap-2 text-amber-600 mb-1"><Zap size={16}/> <span className="text-[10px] font-black uppercase">Điện năng</span></div>
                        <div className="flex justify-between text-[10px] font-bold text-amber-800 opacity-60"><span>Chỉ số: {selectedInvoice.oldElectricity} - {selectedInvoice.newElectricity}</span></div>
                        <div className="flex justify-between items-center"><span className="text-xs font-bold text-amber-900">Tiêu thụ: {selectedInvoice.newElectricity - selectedInvoice.oldElectricity} kWh</span> <span className="font-black text-amber-900">{((selectedInvoice.newElectricity - selectedInvoice.oldElectricity) * selectedInvoice.electricityRate).toLocaleString()} đ</span></div>
                     </div>
-                    <div className="p-4 bg-blue-50 rounded-2xl space-y-2">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl space-y-2">
                        <div className="flex items-center gap-2 text-blue-600 mb-1"><Droplets size={16}/> <span className="text-[10px] font-black uppercase">Nước sinh hoạt</span></div>
                        <div className="flex justify-between text-[10px] font-bold text-blue-800 opacity-60"><span>Chỉ số: {selectedInvoice.oldWater} - {selectedInvoice.newWater}</span></div>
                        <div className="flex justify-between items-center"><span className="text-xs font-bold text-blue-900">Khối: {selectedInvoice.newWater - selectedInvoice.oldWater} m³</span> <span className="font-black text-blue-900">{((selectedInvoice.newWater - selectedInvoice.oldWater) * selectedInvoice.waterRate).toLocaleString()} đ</span></div>

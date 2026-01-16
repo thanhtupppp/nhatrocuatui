@@ -111,7 +111,7 @@ const Header: React.FC<HeaderProps> = ({ view, userEmail, onMenuClick, invoices 
           <p className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[120px]">{userEmail}</p>
         </div>
         
-        <div className="w-10 md:w-12 h-10 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 text-base md:text-lg uppercase ring-3 md:ring-4 ring-white shrink-0">
+        <div className="w-10 md:w-12 h-10 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 text-base md:text-lg uppercase ring-3 md:ring-4 ring-white dark:ring-slate-900 shrink-0">
           {userEmail?.charAt(0)}
         </div>
       </div>
