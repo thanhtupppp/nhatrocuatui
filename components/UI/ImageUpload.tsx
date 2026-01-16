@@ -98,7 +98,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide">
+      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
         {label}
       </label>
       
@@ -107,7 +107,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           <img 
             src={value} 
             alt={label}
-            className="w-full h-32 object-cover rounded-xl border-2 border-slate-200 cursor-pointer hover:border-indigo-400 transition-colors"
+            className="w-full h-32 object-cover rounded-xl border-2 border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-400 transition-colors"
             onClick={() => !disabled && setIsPreviewOpen(true)}
           />
           <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -139,10 +139,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           disabled={isCompressing || disabled}
           className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all
             ${disabled 
-              ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed' 
+              ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600' 
               : isCompressing 
-                ? 'border-indigo-400 bg-indigo-50 text-indigo-600' 
-                : 'border-slate-300 text-slate-400 hover:border-indigo-400 hover:text-indigo-500 hover:bg-indigo-50/50'
+                ? 'border-indigo-400 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' 
+                : 'border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:border-indigo-400 hover:text-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10'
             }`}
         >
           {isCompressing ? (
