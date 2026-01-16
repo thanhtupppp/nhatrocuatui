@@ -12,7 +12,8 @@ import {
   CreditCard, 
   User, 
   FileText,
-  Calculator
+  Calculator,
+  Building, Phone, MapPin, IdCard
 } from 'lucide-react';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -35,6 +36,11 @@ interface FormData {
   bankOwner: string;
   houseRules: string;
   qrPrefix: string;
+  // Landlord fields
+  landlordName: string;
+  landlordPhone: string;
+  landlordIdCard: string;
+  landlordAddress: string;
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
@@ -47,7 +53,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
     bankAccount: settings.bankAccount || '',
     bankOwner: settings.bankOwner || '',
     houseRules: settings.houseRules || '',
-    qrPrefix: settings.qrPrefix || 'TT TIEN PHONG'
+    qrPrefix: settings.qrPrefix || 'TT TIEN PHONG',
+    landlordName: settings.landlordName || '',
+    landlordPhone: settings.landlordPhone || '',
+    landlordIdCard: settings.landlordIdCard || '',
+    landlordAddress: settings.landlordAddress || ''
   }));
   const [isSaving, setIsSaving] = useState(false);
   const { showToast } = useToast();
@@ -111,6 +121,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
         bankOwner: form.bankOwner,
         houseRules: form.houseRules,
         qrPrefix: form.qrPrefix,
+        landlordName: form.landlordName,
+        landlordPhone: form.landlordPhone,
+        landlordIdCard: form.landlordIdCard,
+        landlordAddress: form.landlordAddress,
         // Versioning / Audit trail
         updatedAt: serverTimestamp(),
         updatedBy: auth.currentUser?.email || null
@@ -304,6 +318,53 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
                <span className="text-xs text-slate-400 font-bold uppercase">Markdown Supported</span>
             </div>
           </Card>
+        </div>
+
+        {/* Landlord Info */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Building size={20} className="text-emerald-500"/> Thông tin Chủ trọ (Hợp đồng)
+          </h3>
+          <Card className="space-y-4">
+            <InputGroup 
+              type="text" 
+              label="Họ và tên chủ trọ" 
+              icon={User} 
+              value={form.landlordName} 
+              onChange={(e) => setForm({...form, landlordName: e.target.value})}
+              placeholder="VD: Nguyễn Văn A"
+            />
+            <InputGroup 
+              type="text" 
+              label="Số CCCD chủ trọ" 
+              icon={IdCard} 
+              value={form.landlordIdCard} 
+              onChange={(e) => setForm({...form, landlordIdCard: e.target.value})}
+              placeholder="VD: 012345678901"
+            />
+            <InputGroup 
+              type="text" 
+              label="Số điện thoại chủ trọ" 
+              icon={Phone} 
+              value={form.landlordPhone} 
+              onChange={(e) => setForm({...form, landlordPhone: e.target.value})}
+              placeholder="VD: 0912345678"
+            />
+            <InputGroup 
+              type="text" 
+              label="Địa chỉ nhà trọ" 
+              icon={MapPin} 
+              value={form.landlordAddress} 
+              onChange={(e) => setForm({...form, landlordAddress: e.target.value})}
+              placeholder="VD: 123 Đường ABC, Quận XYZ, TP.HCM"
+            />
+          </Card>
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-800">
+            <p className="font-semibold mb-1">📋 Dùng cho Hợp đồng</p>
+            <p className="text-xs leading-relaxed opacity-80">
+              Thông tin này sẽ được điền tự động vào mẫu Hợp đồng thuê phòng khi tạo hợp đồng cho khách.
+            </p>
+          </div>
         </div>
 
         <div className="sticky bottom-4 z-20 flex justify-end">

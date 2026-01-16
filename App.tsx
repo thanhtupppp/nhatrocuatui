@@ -24,6 +24,7 @@ import InvoicesView from './views/InvoicesView';
 import ExpensesView from './views/ExpensesView';
 import SettingsView from './views/SettingsView';
 import TenantPortalView from './views/TenantPortalView';
+import IncidentsView from './views/IncidentsView';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -106,10 +107,11 @@ const App: React.FC = () => {
 
         <main className="flex-1 p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto w-full overflow-y-auto custom-scrollbar print:p-0">
           {view === 'dashboard' && <DashboardView rooms={rooms} invoices={invoices} expenses={expenses} setView={setView} />}
-          {view === 'rooms' && <RoomsView rooms={rooms} tenants={tenants} settings={settings} />}
+          {view === 'rooms' && <RoomsView rooms={rooms} tenants={tenants} settings={settings} invoices={invoices} />}
           {view === 'tenants' && <TenantsView tenants={tenants} rooms={rooms} />}
           {view === 'invoices' && <InvoicesView invoices={invoices} rooms={rooms} tenants={tenants} settings={settings} />}
           {view === 'expenses' && <ExpensesView expenses={expenses} />}
+          {view === 'incidents' && <IncidentsView rooms={rooms} />}
           {view === 'settings' && <SettingsView key={settings.electricityRate} settings={settings} />}
         </main>
       </div>

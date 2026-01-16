@@ -12,7 +12,8 @@ import {
   Settings as SettingsIcon, 
   LogOut,
   X,
-  CreditCard
+  CreditCard,
+  ShieldAlert
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -29,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setIsOp
     { id: 'tenants', label: 'Khách thuê', icon: Users },
     { id: 'invoices', label: 'Hóa đơn', icon: Receipt },
     { id: 'expenses', label: 'Sổ chi tiêu', icon: Wallet },
+    { id: 'incidents', label: 'Sự cố', icon: ShieldAlert },
     { id: 'settings', label: 'Cấu hình', icon: SettingsIcon },
   ];
 

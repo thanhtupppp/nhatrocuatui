@@ -16,6 +16,8 @@ export interface Room {
   description?: string;
   electricityMeter: number;
   waterMeter: number;
+  pendingElectricityMeter?: number; // Chỉ số chốt chờ lập hóa đơn
+  pendingWaterMeter?: number;       // Chỉ số chốt chờ lập hóa đơn
 }
 
 export interface Tenant {
@@ -35,6 +37,11 @@ export interface Tenant {
   hometown: string;            // Quê quán
   currentAddress?: string;     // Địa chỉ hiện tại
   
+  // Occupation & Vehicle
+  occupation?: string;         // Nghề nghiệp
+  licensePlate?: string;       // Biển số xe
+  vehicleType?: string;        // Loại xe
+  
   // Emergency Contact
   emergencyContact?: string;   // Số ĐT người thân
   emergencyName?: string;      // Tên người thân
@@ -43,6 +50,8 @@ export interface Tenant {
   roomId?: string;
   startDate: string;
   contractDraft?: string;      // Lưu bản thảo hợp đồng AI
+  notes?: string;              // Ghi chú thêm
+  isRepresentative?: boolean;  // Người đại diện phòng
 }
 
 export interface Invoice {
@@ -62,6 +71,10 @@ export interface Invoice {
   otherFees: number;
   total: number;
   paid: boolean;
+  electricityUsage: number;
+  electricityCost: number;
+  waterUsage: number;
+  waterCost: number;
   createdAt: string;
 }
 
@@ -71,7 +84,9 @@ export interface Expense {
   title: string;
   amount: number;
   category: string;
-  date: string;
+  date: string;               // Ngày thực tế chi tiền
+  month: number;              // Kỳ tháng hạch toán
+  year: number;               // Năm hạch toán
   description?: string;
   createdAt: any;
 }
@@ -91,11 +106,16 @@ export interface SystemSettings {
   waterRate: number;
   internetFee: number;
   trashFee: number;
-  bankId: string; // Tên viết tắt ngân hàng (VCB, MB...)
+  bankId: string;
   bankAccount: string;
   bankOwner: string;
-  houseRules: string; // Nội quy nhà trọ
-  qrPrefix?: string;  // Tiền tố nội dung chuyển khoản
+  houseRules: string;
+  qrPrefix?: string;
+  // Landlord Information
+  landlordName?: string;
+  landlordPhone?: string;
+  landlordIdCard?: string;
+  landlordAddress?: string;
 }
 
-export type ViewType = 'dashboard' | 'rooms' | 'tenants' | 'invoices' | 'expenses' | 'settings' | 'ai-assistant' | 'tenant-portal';
+export type ViewType = 'dashboard' | 'rooms' | 'tenants' | 'invoices' | 'expenses' | 'incidents' | 'settings' | 'ai-assistant' | 'tenant-portal';
