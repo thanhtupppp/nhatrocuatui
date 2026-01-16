@@ -98,38 +98,38 @@ const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
             <input 
               type="text" placeholder="Tìm kiếm khoản chi..." 
-              className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-6 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-12 pr-6 py-3 text-sm font-medium dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
               value={search} onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           
-          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm shrink-0">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 shadow-sm shrink-0">
              <select 
                value={selectedMonth} 
                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-               className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer"
+               className="bg-transparent border-none text-sm font-bold dark:text-white focus:ring-0 cursor-pointer"
              >
                {Array.from({ length: 12 }, (_, i) => (
-                 <option key={i + 1} value={i + 1}>Kỳ T{i + 1}</option>
+                 <option key={i + 1} value={i + 1} className="dark:bg-slate-800">Kỳ T{i + 1}</option>
                ))}
              </select>
-             <div className="w-px h-4 bg-slate-200 mx-1"></div>
+             <div className="w-px h-4 bg-slate-200 dark:bg-slate-600 mx-1"></div>
              <select 
                value={selectedYear} 
                onChange={(e) => setSelectedYear(Number(e.target.value))}
-               className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer"
+               className="bg-transparent border-none text-sm font-bold dark:text-white focus:ring-0 cursor-pointer"
              >
                {[2023, 2024, 2025, 2026].map(y => (
-                 <option key={y} value={y}>{y}</option>
+                 <option key={y} value={y} className="dark:bg-slate-800">{y}</option>
                ))}
              </select>
           </div>
         </div>
         
         <div className="flex gap-4 w-full md:w-auto">
-          <Card className="!p-4 bg-rose-50 !border-rose-100 flex items-center gap-3 shrink-0">
-              <TrendingUp size={20} className="text-rose-600"/>
-              <span className="text-xs font-bold text-rose-800 uppercase">
+          <Card className="!p-4 bg-rose-50 dark:bg-rose-900/20 !border-rose-100 dark:!border-rose-500/20 flex items-center gap-3 shrink-0">
+              <TrendingUp size={20} className="text-rose-600 dark:text-rose-400"/>
+              <span className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase">
                 Tổng chi {formatPeriod(selectedMonth, selectedYear)}: {formatCurrency(totalPeriod)}
               </span>
           </Card>
@@ -149,39 +149,39 @@ const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
           {filtered.map(expense => (
-            <Card key={expense.id} className="!p-6 flex flex-col justify-between group hover:shadow-lg transition-all border-l-4 !border-l-rose-500">
+            <Card key={expense.id} className="!p-6 flex flex-col justify-between group hover:shadow-lg transition-all border-l-4 !border-l-rose-500 dark:!border-l-rose-500 dark:bg-slate-800 dark:border-slate-700">
               <div className="mb-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="bg-rose-50 p-2 rounded-lg text-rose-600">
+                  <div className="bg-rose-50 dark:bg-rose-900/20 p-2 rounded-lg text-rose-600 dark:text-rose-400">
                     <FileText size={20} />
                   </div>
                   <div className="text-right">
                     <span className="block text-[10px] font-black text-slate-400 uppercase">
                       Kỳ {formatPeriod(expense.month || (new Date(expense.date).getMonth() + 1), expense.year || new Date(expense.date).getFullYear())}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-300">
+                    <span className="text-[10px] font-bold text-slate-300 dark:text-slate-500">
                       Ngày chi: {new Date(expense.date).toLocaleDateString('vi-VN')}
                     </span>
                   </div>
                 </div>
-                <h4 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors line-clamp-2">{expense.title}</h4>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors line-clamp-2">{expense.title}</h4>
                 <p className="text-xs text-slate-400 mt-1 line-clamp-1">{expense.description || expense.category}</p>
               </div>
               
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
-                <span className="text-xl font-black text-rose-600">{formatCurrency(expense.amount)}</span>
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between mt-auto">
+                <span className="text-xl font-black text-rose-600 dark:text-rose-400">{formatCurrency(expense.amount)}</span>
                 <div className="flex gap-2">
                   <Button 
                     onClick={() => handleOpenEdit(expense)}
                     variant="ghost"
-                    className="!p-2 hover:!bg-blue-50 hover:!text-blue-600 h-auto"
+                    className="!p-2 hover:!bg-blue-50 dark:hover:!bg-blue-900/20 hover:!text-blue-600 dark:hover:!text-blue-400 h-auto"
                   >
                     <Edit3 size={18} />
                   </Button>
                   <Button 
                     onClick={() => handleDelete(expense.id)}
                     variant="ghost"
-                    className="!p-2 hover:!bg-rose-50 hover:!text-rose-600 h-auto"
+                    className="!p-2 hover:!bg-rose-50 dark:hover:!bg-rose-900/20 hover:!text-rose-600 dark:hover:!text-rose-400 h-auto"
                   >
                     <Trash2 size={18} />
                   </Button>
@@ -202,12 +202,12 @@ const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
           <div className="space-y-1">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Kỳ hạch toán (Dành cho thống kê lời lãi)</label>
             <div className="grid grid-cols-2 gap-4">
-               <select value={form.month} onChange={e => setForm({...form, month: Number(e.target.value)})} className="bg-slate-50 border-none rounded-xl px-4 py-3 font-bold">
+               <select value={form.month} onChange={e => setForm({...form, month: Number(e.target.value)})} className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white">
                  {Array.from({ length: 12 }, (_, i) => (
                    <option key={i + 1} value={i + 1}>Tháng {i + 1}</option>
                  ))}
                </select>
-               <select value={form.year} onChange={e => setForm({...form, year: Number(e.target.value)})} className="bg-slate-50 border-none rounded-xl px-4 py-3 font-bold">
+               <select value={form.year} onChange={e => setForm({...form, year: Number(e.target.value)})} className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white">
                  {[2023, 2024, 2025, 2026].map(y => (
                    <option key={y} value={y}>Năm {y}</option>
                  ))}
@@ -217,28 +217,28 @@ const ExpensesView: React.FC<ExpensesViewProps> = ({ expenses }) => {
 
           <div className="space-y-1">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tên khoản chi</label>
-            <input type="text" required placeholder="Ví dụ: Điện Tổng Khu - T12" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500"/>
+            <input type="text" required placeholder="Ví dụ: Điện Tổng Khu - T12" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 ring-blue-500"/>
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mô tả chi tiết</label>
-            <input type="text" placeholder="Ghi chú thêm..." value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500"/>
+            <input type="text" placeholder="Ghi chú thêm..." value={form.description} onChange={e => setForm({...form, description: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 ring-blue-500"/>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Số tiền</label>
-              <input type="number" required value={form.amount} onChange={e => setForm({...form, amount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold text-rose-600 focus:ring-2 ring-blue-500"/>
+              <input type="number" required value={form.amount} onChange={e => setForm({...form, amount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-rose-600 dark:text-rose-400 focus:ring-2 ring-blue-500"/>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ngày thực chi</label>
-              <input type="date" required value={form.date} onChange={e => setForm({...form, date: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500"/>
+              <input type="date" required value={form.date} onChange={e => setForm({...form, date: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 ring-blue-500"/>
             </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Danh mục</label>
-            <select value={form.category} onChange={e => setForm({...form, category: e.target.value as any})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-blue-500">
+            <select value={form.category} onChange={e => setForm({...form, category: e.target.value as any})} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 ring-blue-500">
               <option value="Điện">Điện (Hóa đơn tổng)</option>
               <option value="Nước">Nước (Hóa đơn tổng)</option>
               <option value="Wifi + Rác">Wifi + Rác</option>
