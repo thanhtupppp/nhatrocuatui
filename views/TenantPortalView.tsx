@@ -88,13 +88,13 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
 
   if (!activeTenant || !activeRoom) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
-        <div className="w-full max-w-md bg-white p-10 rounded-[3rem] border border-slate-200 shadow-2xl space-y-8 animate-in zoom-in-95">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 font-sans transition-colors duration-500">
+        <div className="w-full max-w-md bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-2xl space-y-8 animate-in zoom-in-95">
           <div className="text-center">
             <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
               <UserSearch size={40} className="text-white -rotate-3" />
             </div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase">Tra cứu khách thuê</h1>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase">Tra cứu khách thuê</h1>
             <p className="text-slate-400 text-xs font-bold uppercase mt-2 tracking-widest">Dành cho cư dân nhà trọ</p>
           </div>
 
@@ -104,7 +104,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
               <input 
                 type="text" required value={loginForm.roomName} 
                 onChange={e => setLoginForm({...loginForm, roomName: e.target.value})} 
-                className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 ring-blue-500" 
+                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 font-bold dark:text-white focus:ring-2 ring-blue-500" 
                 placeholder="Số phòng của bạn"
               />
             </div>
@@ -113,7 +113,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
               <input 
                 type="text" required value={loginForm.idCard} 
                 onChange={e => setLoginForm({...loginForm, idCard: e.target.value})} 
-                className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 ring-blue-500" 
+                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 font-bold dark:text-white focus:ring-2 ring-blue-500" 
                 placeholder="Nhập CCCD để định danh"
               />
             </div>
@@ -131,9 +131,9 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans pb-20 transition-colors duration-500">
       {/* Header */}
-      <div className="bg-slate-900 text-white p-8 md:p-12 rounded-b-[3rem] shadow-2xl">
+      <div className="bg-slate-900 dark:bg-slate-900 text-white p-8 md:p-12 rounded-b-[3rem] shadow-2xl">
          <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-6">
                <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-3xl font-black">{activeRoom.name.charAt(0)}</div>
@@ -151,7 +151,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
 
       {/* Tabs */}
       <div className="max-w-4xl mx-auto -mt-8 px-4">
-        <div className="bg-white p-2 rounded-[2rem] shadow-xl flex gap-2 overflow-x-auto custom-scrollbar no-scrollbar">
+        <div className="bg-white dark:bg-slate-900 p-2 rounded-[2rem] shadow-xl flex gap-2 overflow-x-auto custom-scrollbar no-scrollbar border dark:border-slate-800">
           {[
             { id: 'invoices', label: 'Hóa đơn', icon: Receipt },
             { id: 'contract', label: 'Hợp đồng', icon: FileText },
@@ -161,7 +161,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
             <button 
               key={tab.id} 
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-black text-xs uppercase whitespace-nowrap transition-all ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-50'}`}
+              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-black text-xs uppercase whitespace-nowrap transition-all ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
             >
               <tab.icon size={18}/> {tab.label}
             </button>
@@ -175,7 +175,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
           <div className="space-y-6">
             {/* Consumption History Mini-Chart */}
             {invoices.filter(i => i.roomId === activeRoom.id).length > 0 && (
-              <div className="bg-white p-8 rounded-[3rem] border border-slate-200 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Lịch sử tiêu thụ (6 tháng gần nhất)</h4>
                 <div className="grid grid-cols-2 gap-6">
                   {/* Electricity Chart */}
@@ -246,20 +246,20 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
                 const waterCost = inv.waterCost || (waterUsage * inv.waterRate);
                 
                 return (
-                  <div key={inv.id} className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden group hover:shadow-xl transition-all">
+                  <div key={inv.id} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden group hover:shadow-xl transition-all">
                     {/* Main Invoice Row */}
                     <div 
                       className="p-8 flex flex-col md:flex-row items-center justify-between gap-6 cursor-pointer"
                       onClick={() => setExpandedInvoiceId(isExpanded ? null : inv.id)}
                     >
                       <div className="flex items-center gap-6">
-                        <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center ${inv.paid ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                        <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center ${inv.paid ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'}`}>
                           <span className="text-[10px] font-black uppercase">Tháng</span>
                           <span className="text-xl font-black">{inv.month}</span>
                         </div>
                         <div>
-                           <h4 className="text-2xl font-black text-slate-900">{inv.total.toLocaleString()} đ</h4>
-                           <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-full ${inv.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                           <h4 className="text-2xl font-black text-slate-900 dark:text-white">{inv.total.toLocaleString()} đ</h4>
+                           <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-full ${inv.paid ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
                              {inv.paid ? 'Đã thanh toán' : 'Chờ thanh toán'}
                            </span>
                         </div>
@@ -281,7 +281,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
 
                     {/* Expandable Detail Section */}
                     {isExpanded && (
-                      <div className="px-8 pb-8 pt-0 border-t border-slate-100 animate-in slide-in-from-top-2 duration-300">
+                      <div className="px-8 pb-8 pt-0 border-t border-slate-100 dark:border-slate-800 animate-in slide-in-from-top-2 duration-300">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 mt-4">Chi tiết hóa đơn</p>
                         <div className="space-y-3">
                           <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
@@ -340,8 +340,8 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
         )}
 
         {activeTab === 'contract' && (
-          <div className="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm space-y-8">
-            <h3 className="text-2xl font-black text-slate-900 uppercase flex items-center gap-3"><FileText size={24} className="text-blue-600"/> Hợp đồng điện tử</h3>
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase flex items-center gap-3"><FileText size={24} className="text-blue-600"/> Hợp đồng điện tử</h3>
             
             {activeTenant.contractDraft ? (
               <>
@@ -385,10 +385,10 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
         )}
 
         {activeTab === 'rules' && (
-          <div className="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm space-y-8">
-            <h3 className="text-2xl font-black text-slate-900 uppercase flex items-center gap-3"><ScrollText size={24} className="text-amber-600"/> Nội quy nhà trọ</h3>
-            <div className="bg-amber-50/30 p-10 rounded-[2rem] border border-amber-100">
-               <div className="whitespace-pre-wrap text-slate-700 leading-loose font-medium">{settings.houseRules}</div>
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase flex items-center gap-3"><ScrollText size={24} className="text-amber-600"/> Nội quy nhà trọ</h3>
+            <div className="bg-amber-50/30 dark:bg-amber-900/10 p-10 rounded-[2rem] border border-amber-100 dark:border-amber-900/20">
+               <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 leading-loose font-medium">{settings.houseRules}</div>
             </div>
             <div className="flex items-center gap-4 bg-blue-50 p-6 rounded-2xl border border-blue-100">
               <CheckCircle2 size={24} className="text-blue-600 shrink-0"/>
@@ -398,11 +398,11 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
         )}
 
         {activeTab === 'incident' && (
-          <div className="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm space-y-8">
+          <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
             <div className="flex items-center gap-4">
-              <div className="p-4 bg-red-50 text-red-600 rounded-3xl"><ShieldAlert size={32}/></div>
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-3xl"><ShieldAlert size={32}/></div>
               <div>
-                <h3 className="text-2xl font-black text-slate-900 uppercase">Báo cáo sự cố</h3>
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase">Báo cáo sự cố</h3>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Hư hỏng điện nước, cơ sở vật chất...</p>
               </div>
             </div>
@@ -412,7 +412,7 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
                  <input 
                    type="text" required value={incidentForm.title} placeholder="Ví dụ: Vòi nước bị rò rỉ"
                    onChange={e => setIncidentForm({...incidentForm, title: e.target.value})} 
-                   className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold" 
+                   className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 font-bold dark:text-white" 
                  />
                </div>
                <div className="space-y-1">
@@ -420,12 +420,12 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
                  <textarea 
                    rows={4} required value={incidentForm.description} placeholder="Mô tả cụ thể sự cố để chúng tôi xử lý nhanh hơn..."
                    onChange={e => setIncidentForm({...incidentForm, description: e.target.value})}
-                          className="w-full bg-slate-50 border-none rounded-[2rem] px-6 py-6 font-bold" 
+                          className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-[2rem] px-6 py-6 font-bold dark:text-white" 
                  />
                </div>
                <button 
                  disabled={isSubmitting} type="submit" 
-                 className="w-full bg-slate-900 text-white py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+                 className="w-full bg-slate-900 dark:bg-slate-700 text-white py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
                >
                  {isSubmitting ? 'Đang gửi...' : <><Send size={24}/> Gửi báo cáo cho Admin</>}
                </button>
@@ -433,19 +433,19 @@ const TenantPortalView: React.FC<TenantPortalViewProps> = ({ rooms, tenants, inv
 
             {/* Incident History */}
             {incidents.length > 0 && (
-              <div className="pt-8 border-t border-slate-100 space-y-4">
+              <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-4">
                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lịch sử sự cố đã báo cáo</h4>
                 {incidents.map((inc) => (
-                  <div key={inc.id} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex items-start justify-between gap-4">
+                  <div key={inc.id} className="bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <p className="font-bold text-slate-900">{inc.title}</p>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{inc.description}</p>
+                      <p className="font-bold text-slate-900 dark:text-white">{inc.title}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{inc.description}</p>
                       <p className="text-[10px] text-slate-400 mt-2">Ngày gửi: {new Date(inc.createdAt).toLocaleDateString('vi-VN')}</p>
                     </div>
                     <span className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-full whitespace-nowrap ${
-                      inc.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' :
-                      inc.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
-                      'bg-amber-100 text-amber-700'
+                      inc.status === 'RESOLVED' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' :
+                      inc.status === 'IN_PROGRESS' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                      'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
                     }`}>
                       {inc.status === 'RESOLVED' ? 'Đã xử lý' : inc.status === 'IN_PROGRESS' ? 'Đang xử lý' : 'Chờ xử lý'}
                     </span>
