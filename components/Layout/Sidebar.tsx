@@ -35,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setIsOp
   ];
 
   const sidebarClasses = `
-    fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-out shadow-2xl xl:shadow-none
+    fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-out shadow-2xl xl:shadow-none
     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
     xl:translate-x-0 xl:static xl:h-screen print:hidden
   `;
@@ -51,24 +51,24 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setIsOp
       )}
 
       <aside className={sidebarClasses}>
-        <div className="p-6 flex items-center justify-between h-20 border-b border-slate-100">
+        <div className="p-6 flex items-center justify-between h-20 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/30">
               <DoorOpen size={24} />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 leading-none tracking-tight">NhaTro<span className="text-indigo-600">Admin</span></h1>
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-none tracking-tight">NhaTro<span className="text-indigo-600 dark:text-indigo-400">Admin</span></h1>
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Management v2</span>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="xl:hidden text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={() => setIsOpen(false)} className="xl:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <X size={24} />
           </button>
         </div>
 
         <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
           <div className="mb-6 px-4">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Menu Chính</p>
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">Menu Chính</p>
           </div>
           {menuItems.map(item => (
             <button 
@@ -76,19 +76,19 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, setIsOp
               onClick={() => setView(item.id as ViewType)}
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all font-medium text-sm group ${
                 currentView === item.id 
-                  ? 'bg-indigo-50 text-indigo-700 shadow-sm shadow-indigo-100' 
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 shadow-sm shadow-indigo-100 dark:shadow-none' 
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              <item.icon size={20} className={`transition-colors ${currentView === item.id ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+              <item.icon size={20} className={`transition-colors ${currentView === item.id ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
               {item.label}
-              {currentView === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600"></div>}
+              {currentView === item.id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"></div>}
             </button>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <button onClick={() => signOut(auth)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all text-sm font-medium">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+          <button onClick={() => signOut(auth)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 transition-all text-sm font-medium">
             <LogOut size={18} /> Đăng xuất
           </button>
         </div>

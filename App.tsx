@@ -99,7 +99,7 @@ const App: React.FC = () => {
   if (!user) return <LoginView onEnterTenantMode={() => setIsTenantMode(true)} />;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex font-sans">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] flex font-sans">
       <Sidebar currentView={view} setView={(v) => { setView(v); setIsSidebarOpen(false); }} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">

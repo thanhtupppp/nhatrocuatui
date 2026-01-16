@@ -174,29 +174,29 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Header with Export Button */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Tổng quan</h1>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">Tổng quan</h1>
           <p className="text-sm text-slate-400 font-medium">Theo dõi hiệu quả kinh doanh nhà trọ</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 shadow-sm">
              <select 
                value={selectedMonth} 
                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-               className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer"
+               className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer text-slate-900 dark:text-white"
              >
                {Array.from({ length: 12 }, (_, i) => (
-                 <option key={i + 1} value={i + 1}>Tháng {i + 1}</option>
+                 <option key={i + 1} value={i + 1} className="dark:bg-slate-800">Tháng {i + 1}</option>
                ))}
              </select>
-             <div className="w-px h-4 bg-slate-200 mx-1"></div>
+             <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
              <select 
                value={selectedYear} 
                onChange={(e) => setSelectedYear(Number(e.target.value))}
-               className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer"
+               className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer text-slate-900 dark:text-white"
              >
                {[2023, 2024, 2025, 2026].map(y => (
-                 <option key={y} value={y}>{y}</option>
+                 <option key={y} value={y} className="dark:bg-slate-800">{y}</option>
                ))}
              </select>
           </div>
@@ -217,42 +217,42 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Utilities Report Section */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-sm">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-xl font-black text-slate-900">Đối soát Điện & Nước</h2>
+            <h2 className="text-xl font-black text-slate-900 dark:text-white">Đối soát Điện & Nước</h2>
             <p className="text-sm text-slate-400 font-medium">So sánh tiêu thụ thực tế của khách hàng vs Hóa đơn nhà cung cấp</p>
           </div>
-          <div className="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">
+          <div className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">
             Tháng {selectedMonth} / {selectedYear}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-bold">
           {/* Electricity column */}
-          <div className="bg-amber-50/50 border border-amber-100 rounded-2xl p-6">
+          <div className="bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-amber-100 text-amber-600 p-2 rounded-lg">
+              <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 p-2 rounded-lg">
                 <TrendingUp size={20} />
               </div>
-              <span className="text-amber-900 uppercase text-xs tracking-widest font-black">Điện tiêu thụ</span>
+              <span className="text-amber-900 dark:text-amber-400 uppercase text-xs tracking-widest font-black">Điện tiêu thụ</span>
             </div>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-black text-slate-900">{totalElectricityUsage.toLocaleString()}</span>
+              <span className="text-4xl font-black text-slate-900 dark:text-white">{totalElectricityUsage.toLocaleString()}</span>
               <span className="text-slate-400">kWh</span>
             </div>
-            <div className="pt-4 border-t border-amber-100 space-y-2">
-              <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-tighter">
+            <div className="pt-4 border-t border-amber-100 dark:border-amber-900/20 space-y-2">
+              <div className="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
                 <span>Thu khách:</span>
-                <span className="text-emerald-600">+{formatCurrency(totalElectricityCost)}</span>
+                <span className="text-emerald-600 dark:text-emerald-500">+{formatCurrency(totalElectricityCost)}</span>
               </div>
-              <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-tighter">
+              <div className="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
                 <span>Chi bill:</span>
-                <span className="text-rose-600">-{formatCurrency(utilityElectricityBill)}</span>
+                <span className="text-rose-600 dark:text-rose-500">-{formatCurrency(utilityElectricityBill)}</span>
               </div>
-              <div className="pt-2 border-t border-amber-100 flex justify-between items-center font-black">
+              <div className="pt-2 border-t border-amber-100 dark:border-amber-900/20 flex justify-between items-center font-black">
                 <span className="text-[10px] text-slate-400 uppercase">Chênh lệch:</span>
-                <span className={totalElectricityCost - utilityElectricityBill >= 0 ? "text-emerald-700" : "text-rose-700"}>
+                <span className={totalElectricityCost - utilityElectricityBill >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}>
                   {formatCurrency(totalElectricityCost - utilityElectricityBill)}
                 </span>
               </div>
@@ -260,29 +260,29 @@ const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Water column */}
-          <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-6">
+          <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-blue-100 text-blue-600 p-2 rounded-lg">
+              <div className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 p-2 rounded-lg">
                 <TrendingUp size={20} />
               </div>
-              <span className="text-blue-900 uppercase text-xs tracking-widest font-black">Nước tiêu thụ</span>
+              <span className="text-blue-900 dark:text-blue-400 uppercase text-xs tracking-widest font-black">Nước tiêu thụ</span>
             </div>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-black text-slate-900">{totalWaterUsage.toLocaleString()}</span>
+              <span className="text-4xl font-black text-slate-900 dark:text-white">{totalWaterUsage.toLocaleString()}</span>
               <span className="text-slate-400">m³</span>
             </div>
-            <div className="pt-4 border-t border-blue-100 space-y-2">
-               <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-tighter">
+            <div className="pt-4 border-t border-blue-100 dark:border-blue-900/20 space-y-2">
+               <div className="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
                 <span>Thu khách:</span>
-                <span className="text-emerald-600">+{formatCurrency(totalWaterCost)}</span>
+                <span className="text-emerald-600 dark:text-emerald-500">+{formatCurrency(totalWaterCost)}</span>
               </div>
-              <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-tighter">
+              <div className="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
                 <span>Chi bill:</span>
-                <span className="text-rose-600">-{formatCurrency(utilityWaterBill)}</span>
+                <span className="text-rose-600 dark:text-rose-500">-{formatCurrency(utilityWaterBill)}</span>
               </div>
-              <div className="pt-2 border-t border-blue-100 flex justify-between items-center font-black">
+              <div className="pt-2 border-t border-blue-100 dark:border-blue-900/20 flex justify-between items-center font-black">
                 <span className="text-[10px] text-slate-400 uppercase">Chênh lệch:</span>
-                <span className={totalWaterCost - utilityWaterBill >= 0 ? "text-emerald-700" : "text-rose-700"}>
+                <span className={totalWaterCost - utilityWaterBill >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}>
                   {formatCurrency(totalWaterCost - utilityWaterBill)}
                 </span>
               </div>
@@ -290,12 +290,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
         
-        <div className="mt-6 flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-          <div className="bg-white self-start p-1.5 rounded-md shadow-sm border border-slate-200">
+        <div className="mt-6 flex items-start gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+          <div className="bg-white dark:bg-slate-800 self-start p-1.5 rounded-md shadow-sm border border-slate-200 dark:border-slate-700">
              <Coins size={14} className="text-slate-400" />
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            <span className="font-bold text-slate-700">Mẹo đối soát:</span> Hãy so sánh tổng <span className="text-amber-600 font-black">{totalElectricityUsage} kWh</span> này với chỉ số trên công tơ điện tổng của nhà trọ. Nếu số kWh trên công tơ tổng cao hơn nhiều so với tổng của các phòng, có thể đang có hiện tượng rò rỉ điện hoặc thiết bị công cộng tiêu thụ quá mức.
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            <span className="font-bold text-slate-700 dark:text-slate-300">Mẹo đối soát:</span> Hãy so sánh tổng <span className="text-amber-600 dark:text-amber-500 font-black">{totalElectricityUsage} kWh</span> này với chỉ số trên công tơ điện tổng của nhà trọ. Nếu số kWh trên công tơ tổng cao hơn nhiều so với tổng của các phòng, có thể đang có hiện tượng rò rỉ điện hoặc thiết bị công cộng tiêu thụ quá mức.
           </p>
         </div>
       </div>
