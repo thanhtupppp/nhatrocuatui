@@ -63,7 +63,7 @@ const IncidentsView: React.FC<IncidentsViewProps> = ({ rooms }) => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 flex items-center gap-3">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <ShieldAlert className="text-red-500" size={32}/>
             Quản lý Sự cố
           </h2>
@@ -78,36 +78,36 @@ const IncidentsView: React.FC<IncidentsViewProps> = ({ rooms }) => {
           <input 
             type="text" 
             placeholder="Tìm kiếm theo tiêu đề, khách thuê, phòng..." 
-            className="w-full bg-white border border-slate-200 pl-11 pr-4 py-3 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all shadow-sm"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-11 pr-4 py-3 rounded-xl text-sm font-medium dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all shadow-sm"
             value={searchQuery} 
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <select 
-          className="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 cursor-pointer shadow-sm"
+          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 cursor-pointer shadow-sm"
           value={statusFilter} 
           onChange={(e) => setStatusFilter(e.target.value as any)}
         >
-          <option value="ALL">Tất cả trạng thái</option>
-          <option value="PENDING">Chờ xử lý</option>
-          <option value="IN_PROGRESS">Đang xử lý</option>
-          <option value="RESOLVED">Đã xử lý</option>
+          <option value="ALL" className="dark:bg-slate-800">Tất cả trạng thái</option>
+          <option value="PENDING" className="dark:bg-slate-800">Chờ xử lý</option>
+          <option value="IN_PROGRESS" className="dark:bg-slate-800">Đang xử lý</option>
+          <option value="RESOLVED" className="dark:bg-slate-800">Đã xử lý</option>
         </select>
       </div>
 
       {/* Stats Summary */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 text-center">
-          <p className="text-3xl font-black text-amber-600">{incidents.filter(i => i.status === 'PENDING').length}</p>
-          <p className="text-[10px] font-bold text-amber-700 uppercase">Chờ xử lý</p>
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-4 text-center">
+          <p className="text-3xl font-black text-amber-600 dark:text-amber-400">{incidents.filter(i => i.status === 'PENDING').length}</p>
+          <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase">Chờ xử lý</p>
         </div>
-        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-center">
-          <p className="text-3xl font-black text-blue-600">{incidents.filter(i => i.status === 'IN_PROGRESS').length}</p>
-          <p className="text-[10px] font-bold text-blue-700 uppercase">Đang xử lý</p>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-500/20 rounded-2xl p-4 text-center">
+          <p className="text-3xl font-black text-blue-600 dark:text-blue-400">{incidents.filter(i => i.status === 'IN_PROGRESS').length}</p>
+          <p className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase">Đang xử lý</p>
         </div>
-        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
-          <p className="text-3xl font-black text-emerald-600">{incidents.filter(i => i.status === 'RESOLVED').length}</p>
-          <p className="text-[10px] font-bold text-emerald-700 uppercase">Đã hoàn thành</p>
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl p-4 text-center">
+          <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{incidents.filter(i => i.status === 'RESOLVED').length}</p>
+          <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase">Đã hoàn thành</p>
         </div>
       </div>
 
@@ -123,24 +123,24 @@ const IncidentsView: React.FC<IncidentsViewProps> = ({ rooms }) => {
           {filteredIncidents.map(inc => {
             const statusConfig = getStatusConfig(inc.status);
             return (
-              <div key={inc.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+              <div key={inc.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
                 <div className="flex flex-col md:flex-row gap-4 md:items-start justify-between">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className="bg-slate-100 text-slate-600 text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">
+                      <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">
                         Phòng {getRoomName(inc.roomId)}
                       </span>
                       <span className="text-[10px] text-slate-400 font-bold">
                         {new Date(inc.createdAt).toLocaleDateString('vi-VN')}
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900">{inc.title}</h3>
-                    <p className="text-sm text-slate-500">{inc.description}</p>
-                    <p className="text-xs text-slate-400">Báo cáo bởi: <span className="font-bold text-slate-600">{inc.tenantName}</span></p>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">{inc.title}</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{inc.description}</p>
+                    <p className="text-xs text-slate-400">Báo cáo bởi: <span className="font-bold text-slate-600 dark:text-slate-300">{inc.tenantName}</span></p>
                   </div>
 
                   <div className="flex flex-col items-end gap-3 shrink-0">
-                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${statusConfig.bg} ${statusConfig.text}`}>
+                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${statusConfig.bg} dark:bg-opacity-20 ${statusConfig.text} dark:text-opacity-80`}>
                       <statusConfig.icon size={14}/>
                       <span className="text-xs font-black uppercase">{statusConfig.label}</span>
                     </div>
@@ -148,11 +148,11 @@ const IncidentsView: React.FC<IncidentsViewProps> = ({ rooms }) => {
                     <select 
                       value={inc.status}
                       onChange={(e) => handleUpdateStatus(inc.id, e.target.value)}
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2 text-xs font-bold dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     >
-                      <option value="PENDING">Chờ xử lý</option>
-                      <option value="IN_PROGRESS">Đang xử lý</option>
-                      <option value="RESOLVED">Đã xử lý</option>
+                      <option value="PENDING" className="dark:bg-slate-700">Chờ xử lý</option>
+                      <option value="IN_PROGRESS" className="dark:bg-slate-700">Đang xử lý</option>
+                      <option value="RESOLVED" className="dark:bg-slate-700">Đã xử lý</option>
                     </select>
                   </div>
                 </div>
