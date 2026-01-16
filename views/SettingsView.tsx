@@ -141,12 +141,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
       <div className="flex items-center gap-4 mb-4">
-        <div className="bg-slate-900 p-3 rounded-xl text-white shadow-lg shadow-slate-900/20">
+        <div className="bg-slate-900 dark:bg-slate-700 p-3 rounded-xl text-white shadow-lg shadow-slate-900/20">
           <SettingsIcon size={24} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Cấu hình hệ thống</h2>
-          <p className="text-sm text-slate-500">Thiết lập đơn giá điện nước và thông tin thanh toán</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Cấu hình hệ thống</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Thiết lập đơn giá điện nước và thông tin thanh toán</p>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Service Rates */}
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Zap size={20} className="text-amber-500"/> Đơn giá dịch vụ
             </h3>
             <Card className="space-y-4">
@@ -193,35 +193,36 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
             </Card>
 
             {/* Live Preview */}
-            <Card className="!bg-gradient-to-br !from-indigo-50 !to-violet-50 !border-indigo-100">
+            <Card className="!bg-gradient-to-br !from-indigo-50 !to-violet-50 dark:!from-indigo-900/30 dark:!to-violet-900/30 !border-indigo-100 dark:!border-indigo-500/20">
               <div className="flex items-center gap-2 mb-4">
-                <Calculator size={18} className="text-indigo-600" />
-                <h4 className="text-sm font-bold text-indigo-900">Ví dụ tính tiền (1 phòng)</h4>
+                <Calculator size={18} className="text-indigo-600 dark:text-indigo-400" />
+                <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-300">Ví dụ tính tiền (1 phòng)</h4>
               </div>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Điện 50 kWh:</span>
                   <span className="font-bold">{preview.electric.toLocaleString()} đ</span>
                 </div>
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Nước 5 m³:</span>
                   <span className="font-bold">{preview.water.toLocaleString()} đ</span>
                 </div>
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
                   <span>Internet + Rác:</span>
                   <span className="font-bold">{preview.services.toLocaleString()} đ</span>
                 </div>
-                <div className="pt-3 mt-3 border-t border-indigo-200 flex justify-between">
-                  <span className="font-bold text-indigo-900">Tổng dịch vụ:</span>
-                  <span className="font-black text-lg text-indigo-600">{preview.total.toLocaleString()} đ</span>
+                <div className="pt-3 mt-3 border-t border-indigo-200 dark:border-indigo-500/30 flex justify-between">
+                  <span className="font-bold text-indigo-900 dark:text-indigo-300">Tổng dịch vụ:</span>
+                  <span className="font-black text-lg text-indigo-600 dark:text-indigo-400">{preview.total.toLocaleString()} đ</span>
                 </div>
               </div>
             </Card>
           </div>
 
+
           {/* Payment Info */}
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <CreditCard size={20} className="text-indigo-500"/> Thông tin thanh toán
             </h3>
             <Card className="space-y-4">
@@ -233,11 +234,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
                   <select 
                     value={form.bankId} 
                     onChange={(e) => setForm({...form, bankId: e.target.value})}
-                    className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-bold focus:ring-2 ring-indigo-500 appearance-none cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 ring-indigo-500 appearance-none cursor-pointer"
                   >
-                    <option value="">-- Chọn ngân hàng --</option>
+                    <option value="" className="dark:bg-slate-800">-- Chọn ngân hàng --</option>
                     {SUPPORTED_BANKS.map(bank => (
-                      <option key={bank.id} value={bank.id}>
+                      <option key={bank.id} value={bank.id} className="dark:bg-slate-800">
                         {bank.name} ({bank.id})
                       </option>
                     ))}
@@ -283,7 +284,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
                   amount={50000}
                   description="MA QR THU NGHIEM"
                   compact={true}
-                  className="!border-indigo-100 !bg-indigo-50/30"
+                  className="!border-indigo-100 !bg-indigo-50/30 dark:!bg-indigo-900/20 dark:!border-indigo-500/20"
                 />
                 <p className="text-[10px] text-center text-slate-400 mt-3 font-medium italic">
                   * Đây là mã QR thử nghiệm với số tiền 50.000đ
@@ -292,7 +293,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
             )}
 
             {/* Info Banner */}
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 rounded-xl text-sm text-amber-800 dark:text-amber-300">
               <p className="font-semibold mb-1">💡 Lưu ý</p>
               <p className="text-xs leading-relaxed opacity-80">
                 Cấu hình này áp dụng cho <strong>toàn bộ hệ thống</strong>. 
@@ -304,17 +305,17 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
 
         {/* House Rules */}
         <div className="space-y-6">
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <FileText size={20} className="text-slate-500"/> Nội quy nhà trọ
           </h3>
-          <Card className="!p-0 overflow-hidden">
+          <Card className="!p-0 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
             <textarea 
-              className="w-full bg-white p-6 min-h-[200px] outline-none text-sm font-medium leading-relaxed resize-y"
+              className="w-full bg-white dark:bg-slate-800 p-6 min-h-[200px] outline-none text-sm font-medium leading-relaxed resize-y dark:text-slate-300"
               value={form.houseRules}
               onChange={(e) => setForm({...form, houseRules: e.target.value})}
               placeholder="Nhập nội quy nhà trọ..."
             ></textarea>
-            <div className="bg-slate-50 p-4 border-t border-slate-100 flex justify-end">
+            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
                <span className="text-xs text-slate-400 font-bold uppercase">Markdown Supported</span>
             </div>
           </Card>
@@ -322,7 +323,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
 
         {/* Landlord Info */}
         <div className="space-y-6">
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Building size={20} className="text-emerald-500"/> Thông tin Chủ trọ (Hợp đồng)
           </h3>
           <Card className="space-y-4">
@@ -359,7 +360,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings }) => {
               placeholder="VD: 123 Đường ABC, Quận XYZ, TP.HCM"
             />
           </Card>
-          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-800">
+          <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-500/20 rounded-xl text-sm text-emerald-800 dark:text-emerald-300">
             <p className="font-semibold mb-1">📋 Dùng cho Hợp đồng</p>
             <p className="text-xs leading-relaxed opacity-80">
               Thông tin này sẽ được điền tự động vào mẫu Hợp đồng thuê phòng khi tạo hợp đồng cho khách.

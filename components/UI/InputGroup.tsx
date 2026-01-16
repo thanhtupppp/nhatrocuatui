@@ -38,9 +38,9 @@ export const InputGroup: React.FC<InputGroupProps> = React.memo(({
         value={value} 
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full bg-slate-50 border rounded-xl px-4 py-3 font-bold focus:outline-none focus:ring-2 transition-all text-slate-900 
-          ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-100' : ''} 
-          ${error ? 'border-rose-400 focus:ring-rose-500/20 focus:border-rose-500' : 'border-slate-200 focus:ring-indigo-500/20 focus:border-indigo-500'}
+        className={`w-full bg-slate-50 dark:bg-slate-800 border rounded-xl px-4 py-3 font-bold focus:outline-none focus:ring-2 transition-all text-slate-900 dark:text-white 
+          ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-900' : ''} 
+          ${error ? 'border-rose-400 focus:ring-rose-500/20 focus:border-rose-500' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500/20 focus:border-indigo-500'}
         `}
       />
       {suffix && (
