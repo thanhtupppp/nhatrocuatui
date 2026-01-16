@@ -1,9 +1,32 @@
+import React, { useState } from 'react';
+import { ViewType, Invoice } from '../../types';
+import { Menu, Bell, X, AlertCircle } from 'lucide-react';
+import { useNotifications } from '../../hooks/useNotifications';
+import { formatDate } from '../../utils/formatUtils';
 import ThemeToggle from '../UI/ThemeToggle';
 
-// ... existing imports
+interface HeaderProps {
+  view: ViewType;
+  userEmail: string | null;
+  onMenuClick: () => void;
+  invoices: Invoice[];
+}
 
 const Header: React.FC<HeaderProps> = ({ view, userEmail, onMenuClick, invoices }) => {
-  // ... existing code
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifications = useNotifications(invoices);
+
+  const titles: Record<ViewType, string> = {
+    dashboard: 'Báo cáo',
+    rooms: 'Phòng trọ',
+    tenants: 'Khách thuê',
+    invoices: 'Hóa đơn',
+    expenses: 'Chi phí',
+    settings: 'Cài đặt',
+    'ai-assistant': 'AI Advisor',
+    'tenant-portal': 'Cổng khách thuê',
+    'incidents': 'Sự cố'
+  };
 
   return (
     <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center sticky top-0 z-30 print:hidden transition-all duration-300">
