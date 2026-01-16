@@ -365,13 +365,13 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
             <input 
               type="text" 
               placeholder="Tìm kiếm phòng..." 
-              className="w-full bg-white border border-slate-200 pl-11 pr-4 py-3 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-11 pr-4 py-3 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-500/40 focus:border-indigo-500 transition-all shadow-sm"
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <select 
-            className="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 cursor-pointer shadow-sm"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-500/40 focus:border-indigo-500 cursor-pointer shadow-sm"
             value={statusFilter} 
             onChange={(e) => setStatusFilter(e.target.value as any)}
           >
@@ -384,7 +384,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
           <Button 
             onClick={handleOpenBulkMeters}
             variant="secondary"
-            className="!bg-amber-50 !border-amber-200 !text-amber-700 hover:!bg-amber-100"
+            className="!bg-amber-50 dark:!bg-amber-900/20 !border-amber-200 dark:!border-amber-800 !text-amber-700 dark:!text-amber-500 hover:!bg-amber-100 dark:hover:!bg-amber-900/30"
             icon={ClipboardList}
           >
             Chốt chỉ số
@@ -392,7 +392,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
           <Button 
             onClick={() => setIsBulkInvoiceModalOpen(true)}
             variant="secondary"
-            className="!bg-indigo-50 !border-indigo-200 !text-indigo-700 hover:!bg-indigo-100"
+            className="!bg-indigo-50 dark:!bg-indigo-900/20 !border-indigo-200 dark:!border-indigo-800 !text-indigo-700 dark:!text-indigo-400 hover:!bg-indigo-100 dark:hover:!bg-indigo-900/30"
             icon={CheckSquare}
           >
             Lập hóa đơn loạt
