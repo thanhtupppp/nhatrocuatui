@@ -43,6 +43,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     totalElectricityUsage, totalElectricityCost, totalWaterUsage, totalWaterCost,
     utilityElectricityBill, utilityWaterBill
   } = useDashboardStats(rooms, invoices, expenses, selectedMonth, selectedYear);
+  
+  // Calculate previous period stats (needed for AI analysis)
+  const prevPeriod = useMemo(() => getPreviousPeriod(selectedMonth, selectedYear), [selectedMonth, selectedYear]);
+  const prevStats = useDashboardStats(rooms, invoices, expenses, prevPeriod.month, prevPeriod.year);
+  
   const chartData = useChartData(invoices, expenses);
   const forecast = useRevenueForecast(chartData);
 
@@ -92,20 +97,67 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
   // AI Advice handler - memoized to prevent creating new function on every render
   const handleGetAdvice = useCallback(async (): Promise<AIAdviceResponse | null> => {
-    const context = {
-      occupancyRate,
-      revenue: collectedRevenue,
-      expense,
-      profit,
-      profitMargin,
-      prevRevenue,
-      totalRooms: rooms.length,
-      currentMonth: selectedMonth,
-      currentYear: selectedYear
+    // Calculate trends (growth rates)
+    const calculateGrowth = (oldVal: number, newVal: number): number => {
+      if (oldVal === 0) return newVal > 0 ? 100 : 0;
+      return ((newVal - oldVal) / oldVal) * 100;
     };
+    
+    // Build comprehensive AI context using pre-calculated stats
+    const context = {
+      currentPeriod: {
+        month: selectedMonth,
+        year: selectedYear,
+        occupancyRate,
+        totalBilled,
+        collectedRevenue,
+        expense,
+        profit,
+        profitMargin,
+        totalRooms: rooms.length,
+        occupiedRooms: Math.round(rooms.length * occupancyRate / 100),
+        electricityRevenue: totalElectricityCost,
+        electricityExpense: utilityElectricityBill,
+        waterRevenue: totalWaterCost,
+        waterExpense: utilityWaterBill
+      },
+      previousPeriod: {
+        month: prevPeriod.month,
+        year: prevPeriod.year,
+        occupancyRate: prevStats.occupancyRate,
+        collectedRevenue: prevStats.collectedRevenue,
+        expense: prevStats.expense,
+        profit: prevStats.profit,
+        profitMargin: prevStats.profitMargin
+      },
+      trends: {
+        revenueGrowth: calculateGrowth(prevStats.collectedRevenue, collectedRevenue),
+        expenseGrowth: calculateGrowth(prevStats.expense, expense),
+        profitGrowth: calculateGrowth(prevStats.profit, profit),
+        occupancyChange: occupancyRate - prevStats.occupancyRate,
+        collectionEfficiency: totalBilled > 0 ? (collectedRevenue / totalBilled) * 100 : 0
+      }
+    };
+    
     const advice = await getAIAdvice(context);
     return advice;
-  }, [occupancyRate, collectedRevenue, expense, profit, profitMargin, prevRevenue, rooms.length]);
+  }, [
+    selectedMonth, 
+    selectedYear, 
+    occupancyRate, 
+    totalBilled, 
+    collectedRevenue, 
+    expense, 
+    profit, 
+    profitMargin,
+    totalElectricityCost,
+    utilityElectricityBill,
+    totalWaterCost,
+    utilityWaterBill,
+    rooms.length,
+    prevPeriod,
+    prevStats
+  ]);
 
   // Prepare export data
   const exportData = useMemo(() => {
