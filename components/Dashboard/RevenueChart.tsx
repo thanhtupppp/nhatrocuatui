@@ -27,21 +27,24 @@ export const RevenueChart: React.FC<RevenueChartProps> = React.memo(({ data }) =
     return () => clearTimeout(timer);
   }, []);
 
+  // Theme detection
+  const isDark = document.documentElement.classList.contains('dark');
+
   return (
-    <Card className="lg:col-span-2 !p-8 min-w-0 min-h-0">
+    <Card className="lg:col-span-2 !p-8 min-w-0 min-h-0 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-3">
-            <Activity size={20} className="text-indigo-600"/> 
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
+            <Activity size={20} className="text-indigo-600 dark:text-indigo-400"/> 
             Hiệu quả kinh doanh
           </h3>
           <p className="text-sm text-slate-400 font-medium">Theo dõi dòng tiền 6 tháng gần nhất</p>
         </div>
         <div className="flex gap-4 text-xs font-bold">
-          <span className="flex items-center gap-2 text-slate-600">
+          <span className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
             <span className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span> Doanh thu
           </span>
-          <span className="flex items-center gap-2 text-slate-600">
+          <span className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
             <span className="w-2.5 h-2.5 bg-rose-500 rounded-full"></span> Chi phí
           </span>
         </div>
@@ -61,19 +64,28 @@ export const RevenueChart: React.FC<RevenueChartProps> = React.memo(({ data }) =
                   <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#f1f5f9'} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: isDark ? '#94a3b8' : '#94a3b8'}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: isDark ? '#94a3b8' : '#94a3b8'}} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
               <Tooltip 
-                contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 600 }}
+                contentStyle={{ 
+                  borderRadius: '1rem', 
+                  border: 'none', 
+                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', 
+                  fontSize: '12px', 
+                  fontWeight: 600,
+                  backgroundColor: isDark ? '#1e293b' : '#fff',
+                  color: isDark ? '#fff' : '#0f172a'
+                }}
                 formatter={(v: number) => [v.toLocaleString() + ' đ']}
+                labelStyle={{ color: isDark ? '#94a3b8' : '#64748b' }}
               />
               <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
               <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorExp)" />
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="w-full h-[300px] bg-slate-50/50 rounded-xl animate-pulse" />
+          <div className="w-full h-[300px] bg-slate-50/50 dark:bg-slate-800/50 rounded-xl animate-pulse" />
         )}
       </div>
     </Card>
