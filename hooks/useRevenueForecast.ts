@@ -13,6 +13,12 @@ interface ForecastResult {
   expenseGrowthPercent: number;
   trend: 'up' | 'down' | 'stable';
   confidence: number; // 0-100
+  analysis?: {
+    phase: 'growth' | 'stable' | 'decline' | 'volatile' | 'risk';
+    quality: 'healthy' | 'warning' | 'critical';
+    volatility: number;
+    explanation: string;
+  };
 }
 
 /**
@@ -156,7 +162,39 @@ export const useRevenueForecast = (chartData: ChartDataPoint[]): ForecastResult 
       revenueGrowthPercent: Math.round(revenueGrowthPercent * 10) / 10,
       expenseGrowthPercent: Math.round(expenseGrowthPercent * 10) / 10,
       trend,
-      confidence
+      confidence,
+      // Enhanced Financial Insights
+      analysis: {
+        phase: determinePhase(),
+        quality: determineQuality(),
+        volatility: Math.round(volatility * 100),
+        explanation: determineExplanation()
+      }
     };
+
+    // Helper functions for analysis
+    function determinePhase(): 'growth' | 'stable' | 'decline' | 'volatile' | 'risk' {
+      if (currentRevenue === 0 && n > 1) return 'risk'; // Shock detection
+      if (volatility > 0.2) return 'volatile';
+      if (revenueGrowthPercent > 5 && trend === 'up') return 'growth';
+      if (revenueGrowthPercent < -5 && trend === 'down') return 'decline';
+      return 'stable';
+    }
+
+    function determineQuality(): 'healthy' | 'warning' | 'critical' {
+      // Quality of Growth: Revenue grows but Expense grows faster?
+      if (revenueGrowthPercent > 0 && expenseGrowthPercent > revenueGrowthPercent * 1.5) return 'warning';
+      if (currentRevenue > 0 && currentExpense > currentRevenue) return 'critical'; // Running at loss
+      return 'healthy';
+    }
+
+    function determineExplanation(): string {
+       if (n < 2) return 'Chưa đủ dữ liệu lịch sử để phân tích xu hướng.';
+       if (volatility > 0.2) return 'Dữ liệu biến động mạnh, dự báo có độ rủi ro cao.';
+       if (trend === 'up' && revenueGrowthPercent > 5) return 'Xu hướng tăng trưởng tích cực dựa trên đà tăng gần đây.';
+       if (trend === 'down') return 'Cảnh báo xu hướng giảm nhẹ trong các tháng gần đây.';
+       return 'Hoạt động kinh doanh ổn định, không có biến động lớn.';
+    }
+
   }, [chartData]);
 };
