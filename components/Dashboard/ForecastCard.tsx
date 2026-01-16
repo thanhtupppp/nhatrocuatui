@@ -46,7 +46,6 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
   const PhaseIcon = phaseConfig?.icon || Info;
 
   return (
-  return (
     <Card className="!p-6 bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 border-violet-100 dark:border-slate-700 relative overflow-hidden flex flex-col h-full">
       {/* Background decoration */}
       <div className="absolute -top-6 -right-6 w-24 h-24 bg-violet-500/5 dark:bg-violet-500/10 rounded-full blur-2xl" />
