@@ -528,10 +528,10 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
         title={`Check-in: ${selectedRoomForCheckin?.name}`}
       >
         <div className="space-y-6">
-          <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
-             <p className="text-xs text-indigo-600 font-bold uppercase mb-1">Đang chọn phòng</p>
-             <p className="text-lg font-black text-slate-900 uppercase">{selectedRoomForCheckin?.name}</p>
-             <p className="text-[10px] text-slate-500 uppercase mt-1">
+          <div className="p-4 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/10 rounded-xl">
+             <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold uppercase mb-1">Đang chọn phòng</p>
+             <p className="text-lg font-black text-slate-900 dark:text-white uppercase">{selectedRoomForCheckin?.name}</p>
+             <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase mt-1">
                {selectedRoomForCheckin?.status === RoomStatus.AVAILABLE ? 'Phòng đang trống' : 'Phòng đã có khách, đang thêm người'}
              </p>
           </div>
@@ -550,14 +550,14 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
                   <button
                     key={t.id}
                     onClick={() => handleCheckinComplete(t.id)}
-                    className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-500 hover:shadow-md rounded-xl transition-all group"
+                    className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 border border-transparent hover:border-indigo-500 hover:shadow-md rounded-xl transition-all group"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-white text-slate-400 group-hover:bg-indigo-600 group-hover:text-white rounded-lg flex items-center justify-center font-bold transition-colors shadow-sm">
                         {t.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="text-left">
-                        <p className="text-sm font-bold text-slate-900 uppercase group-hover:text-indigo-600 transition-colors">{t.name}</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white uppercase group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{t.name}</p>
                         <p className="text-[10px] text-slate-400 font-medium">{t.phone}</p>
                       </div>
                     </div>
@@ -574,17 +574,17 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
       <Modal isOpen={isInvoiceModalOpen} onClose={() => setIsInvoiceModalOpen(false)} title={`Chốt tiền: ${selectedRoomForInvoice?.name}`}>
         <form onSubmit={handleCreateInvoice} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <input type="number" value={invoiceForm.month} onChange={e => setInvoiceForm({...invoiceForm, month: parseInt(e.target.value) || 1})} className="w-full bg-slate-50 rounded-xl px-4 py-3 font-bold" />
-            <input type="number" value={invoiceForm.year} onChange={e => setInvoiceForm({...invoiceForm, year: parseInt(e.target.value) || 2024})} className="w-full bg-slate-50 rounded-xl px-4 py-3 font-bold" />
+            <input type="number" value={invoiceForm.month} onChange={e => setInvoiceForm({...invoiceForm, month: parseInt(e.target.value) || 1})} className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white" />
+            <input type="number" value={invoiceForm.year} onChange={e => setInvoiceForm({...invoiceForm, year: parseInt(e.target.value) || 2024})} className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white" />
           </div>
           <div className="grid grid-cols-2 gap-4">
              <div>
-               <label className="text-[10px] font-black text-amber-600 uppercase">Điện mới</label>
-               <input type="number" value={invoiceForm.newElectricity} onChange={e => setInvoiceForm({...invoiceForm, newElectricity: parseInt(e.target.value) || 0})} className="w-full bg-amber-50 rounded-xl px-4 py-3 font-bold text-amber-700"/>
+               <label className="text-[10px] font-black text-amber-600 dark:text-amber-500 uppercase">Điện mới</label>
+               <input type="number" value={invoiceForm.newElectricity} onChange={e => setInvoiceForm({...invoiceForm, newElectricity: parseInt(e.target.value) || 0})} className="w-full bg-amber-50 dark:bg-amber-900/10 rounded-xl px-4 py-3 font-bold text-amber-700 dark:text-amber-400"/>
              </div>
              <div>
-               <label className="text-[10px] font-black text-blue-600 uppercase">Nước mới</label>
-               <input type="number" value={invoiceForm.newWater} onChange={e => setInvoiceForm({...invoiceForm, newWater: parseInt(e.target.value) || 0})} className="w-full bg-blue-50 rounded-xl px-4 py-3 font-bold text-blue-700"/>
+               <label className="text-[10px] font-black text-blue-600 dark:text-blue-500 uppercase">Nước mới</label>
+               <input type="number" value={invoiceForm.newWater} onChange={e => setInvoiceForm({...invoiceForm, newWater: parseInt(e.target.value) || 0})} className="w-full bg-blue-50 dark:bg-blue-900/10 rounded-xl px-4 py-3 font-bold text-blue-700 dark:text-blue-400"/>
              </div>
           </div>
           <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase shadow-lg">Xác nhận tạo hóa đơn</button>
@@ -631,8 +631,8 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
                   return b.month - a.month;
                 })
                 .map((inv) => (
-                  <div key={inv.id} className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                    <div className="bg-white px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                  <div key={inv.id} className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="bg-white dark:bg-slate-900/50 px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                       <span className="text-xs font-black text-indigo-600 uppercase">Tháng {inv.month}/{inv.year}</span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${inv.paid ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                         {inv.paid ? 'Đã thu' : 'Chưa thu'}
@@ -649,14 +649,14 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
                         <div className="flex items-baseline justify-between bg-white/50 p-2 rounded-lg border border-slate-100">
                           <div className="text-center">
                             <p className="text-[8px] text-slate-400 font-bold uppercase">Cũ</p>
-                            <p className="text-xs font-bold text-slate-600">{inv.oldElectricity}</p>
+                            <p className="text-xs font-bold text-slate-600 dark:text-slate-400">{inv.oldElectricity}</p>
                           </div>
-                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 self-center"></div>
                           <div className="text-center">
                             <p className="text-[8px] text-slate-400 font-bold uppercase">Mới</p>
-                            <p className="text-xs font-bold text-slate-900">{inv.newElectricity}</p>
+                            <p className="text-xs font-bold text-slate-900 dark:text-slate-200">{inv.newElectricity}</p>
                           </div>
-                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 self-center"></div>
                           <div className="text-center">
                             <p className="text-[8px] text-amber-500 font-bold uppercase">Dùng</p>
                             <p className="text-xs font-black text-amber-600">
@@ -675,14 +675,14 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
                         <div className="flex items-baseline justify-between bg-white/50 p-2 rounded-lg border border-slate-100">
                            <div className="text-center">
                             <p className="text-[8px] text-slate-400 font-bold uppercase">Cũ</p>
-                            <p className="text-xs font-bold text-slate-600">{inv.oldWater}</p>
+                            <p className="text-xs font-bold text-slate-600 dark:text-slate-400">{inv.oldWater}</p>
                           </div>
-                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 self-center"></div>
                           <div className="text-center">
                             <p className="text-[8px] text-slate-400 font-bold uppercase">Mới</p>
-                            <p className="text-xs font-bold text-slate-900">{inv.newWater}</p>
+                            <p className="text-xs font-bold text-slate-900 dark:text-slate-200">{inv.newWater}</p>
                           </div>
-                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 self-center"></div>
                           <div className="text-center">
                             <p className="text-[8px] text-blue-500 font-bold uppercase">Dùng</p>
                             <p className="text-xs font-black text-blue-600">
