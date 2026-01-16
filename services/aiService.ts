@@ -199,8 +199,8 @@ const getAIAdviceProd = async (context: AIAnalysisContext): Promise<AIAdviceResp
   }
 };
 
-// Export: Auto-select based on environment
-export const getAIAdvice = isDevelopment ? getAIAdviceDev : getAIAdviceProd;
+// Export: Use direct Groq call for both dev and production (no backend)
+export const getAIAdvice = getAIAdviceDev;
 
 // Contract Generation (same pattern)
 export const generateRentalContract = async (
