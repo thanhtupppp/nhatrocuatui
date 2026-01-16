@@ -646,7 +646,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
                           <Zap size={12} className="text-amber-500" />
                           <span className="text-[10px] font-black text-slate-400 uppercase">Điện (kWh)</span>
                         </div>
-                        <div className="flex items-baseline justify-between bg-white/50 p-2 rounded-lg border border-slate-100">
+                        <div className="flex items-baseline justify-between bg-white/50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
                           <div className="text-center">
                             <p className="text-[8px] text-slate-400 font-bold uppercase">Cũ</p>
                             <p className="text-xs font-bold text-slate-600 dark:text-slate-400">{inv.oldElectricity}</p>
@@ -672,7 +672,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
                           <Droplets size={12} className="text-blue-500" />
                           <span className="text-[10px] font-black text-slate-400 uppercase">Nước (m³)</span>
                         </div>
-                        <div className="flex items-baseline justify-between bg-white/50 p-2 rounded-lg border border-slate-100">
+                        <div className="flex items-baseline justify-between bg-white/50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
                            <div className="text-center">
                             <p className="text-[8px] text-slate-400 font-bold uppercase">Cũ</p>
                             <p className="text-xs font-bold text-slate-600 dark:text-slate-400">{inv.oldWater}</p>
