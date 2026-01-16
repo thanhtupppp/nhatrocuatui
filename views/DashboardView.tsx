@@ -309,6 +309,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
           revenueGrowthPercent={forecast.revenueGrowthPercent}
           trend={forecast.trend}
           confidence={forecast.confidence}
+          analysis={forecast.analysis}
         />
 
         {/* Room Overview - 2 columns */}
