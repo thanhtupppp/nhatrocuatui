@@ -27,8 +27,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = React.memo(({ data }) =
     return () => clearTimeout(timer);
   }, []);
 
-  // Theme detection
-  const isDark = document.documentElement.classList.contains('dark');
 
   return (
     <Card className="lg:col-span-2 !p-8 min-w-0 min-h-0 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
@@ -64,9 +62,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = React.memo(({ data }) =
                   <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#f1f5f9'} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: isDark ? '#94a3b8' : '#94a3b8'}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: isDark ? '#94a3b8' : '#94a3b8'}} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: 'var(--chart-text)'}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: 'var(--chart-text)'}} tickFormatter={(v) => `${(v/1000000).toFixed(0)}M`} />
               <Tooltip 
                 contentStyle={{ 
                   borderRadius: '1rem', 
@@ -74,11 +72,11 @@ export const RevenueChart: React.FC<RevenueChartProps> = React.memo(({ data }) =
                   boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', 
                   fontSize: '12px', 
                   fontWeight: 600,
-                  backgroundColor: isDark ? '#1e293b' : '#fff',
-                  color: isDark ? '#fff' : '#0f172a'
+                  backgroundColor: 'var(--chart-tooltip-bg)',
+                  color: 'var(--chart-tooltip-text)'
                 }}
                 formatter={(v: number) => [v.toLocaleString() + ' đ']}
-                labelStyle={{ color: isDark ? '#94a3b8' : '#64748b' }}
+                labelStyle={{ color: 'var(--chart-text)' }}
               />
               <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
               <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorExp)" />

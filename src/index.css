@@ -8,6 +8,19 @@
     --color-secondary: 16 185 129; /* Emerald 500 */
     --color-surface: 255 255 255;
     --color-background: 248 250 252; /* Slate 50 */
+    
+    /* Chart Colors */
+    --chart-grid: #f1f5f9;
+    --chart-text: #94a3b8;
+    --chart-tooltip-bg: #fff;
+    --chart-tooltip-text: #0f172a;
+  }
+
+  :root.dark {
+    --chart-grid: #334155;
+    --chart-text: #94a3b8;
+    --chart-tooltip-bg: #1e293b;
+    --chart-tooltip-text: #fff;
   }
 
   body {
