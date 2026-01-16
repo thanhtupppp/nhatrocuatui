@@ -30,7 +30,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = React.memo(({ onGetAdvice }) 
   };
 
   return (
-    <div className="flex flex-col h-full rounded-2xl overflow-hidden bg-slate-900 text-white shadow-2xl relative border border-slate-800">
+    <div className="flex flex-col h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xl dark:shadow-2xl relative border border-slate-200 dark:border-slate-800">
       <div className="absolute top-0 right-0 p-8 opacity-5">
         <Sparkles size={80} />
       </div>
@@ -39,10 +39,10 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = React.memo(({ onGetAdvice }) 
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div>
-            <div className="inline-flex items-center gap-2 bg-indigo-500/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-indigo-300 mb-2 border border-indigo-500/30">
+            <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-500/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-300 mb-2 border border-indigo-100 dark:border-indigo-500/30">
               <Sparkles size={12} /> AI Advisor Pro
             </div>
-            <h3 className="text-xl font-black">Trợ lý Chiến lược</h3>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white">Trợ lý Chiến lược</h3>
           </div>
           {analysis && (
             <div className="flex flex-col items-end">
@@ -64,8 +64,8 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = React.memo(({ onGetAdvice }) 
           ) : analysis ? (
             <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* Summary */}
-              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                <p className="text-sm text-slate-200 leading-relaxed font-medium">
+              <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                <p className="text-sm text-slate-600 dark:text-slate-200 leading-relaxed font-medium">
                   {analysis.summary}
                 </p>
               </div>
@@ -74,11 +74,11 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = React.memo(({ onGetAdvice }) 
               <div className="grid gap-3">
                 {analysis.risks.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-rose-400 uppercase flex items-center gap-2">
+                    <p className="text-xs font-bold text-rose-500 dark:text-rose-400 uppercase flex items-center gap-2">
                       <AlertTriangle size={12} /> Cảnh báo rủi ro
                     </p>
                     {analysis.risks.map((risk, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-300 bg-rose-500/5 p-2 rounded-lg border border-rose-500/10 hover:bg-rose-500/10 transition-colors">
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300 bg-rose-50 dark:bg-rose-500/5 p-2 rounded-lg border border-rose-100 dark:border-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/10 transition-colors">
                         <span className="mt-0.5 w-1 h-1 rounded-full bg-rose-500 shrink-0" />
                         {risk}
                       </div>
@@ -88,11 +88,11 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = React.memo(({ onGetAdvice }) 
 
                 {analysis.opportunities.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-emerald-400 uppercase flex items-center gap-2">
+                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase flex items-center gap-2">
                       <TrendingUp size={12} /> Cơ hội tăng trưởng
                     </p>
                     {analysis.opportunities.map((opp, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-300 bg-emerald-500/5 p-2 rounded-lg border border-emerald-500/10 hover:bg-emerald-500/10 transition-colors">
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300 bg-emerald-50 dark:bg-emerald-500/5 p-2 rounded-lg border border-emerald-100 dark:border-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/10 transition-colors">
                         <span className="mt-0.5 w-1 h-1 rounded-full bg-emerald-500 shrink-0" />
                         {opp}
                       </div>
@@ -103,7 +103,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = React.memo(({ onGetAdvice }) 
             </div>
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-center p-4">
-              <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-600">
+              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400 dark:text-slate-600">
                 <ShieldCheck size={32} />
               </div>
               <p className="text-slate-400 text-sm font-medium mb-1">Chưa có dữ liệu phân tích</p>

@@ -46,20 +46,21 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
   const PhaseIcon = phaseConfig?.icon || Info;
 
   return (
-    <Card className="!p-6 bg-gradient-to-br from-violet-50 to-indigo-50 border-violet-100 relative overflow-hidden flex flex-col h-full">
+  return (
+    <Card className="!p-6 bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 border-violet-100 dark:border-slate-700 relative overflow-hidden flex flex-col h-full">
       {/* Background decoration */}
-      <div className="absolute -top-6 -right-6 w-24 h-24 bg-violet-500/5 rounded-full blur-2xl" />
-      <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-indigo-500/5 rounded-full blur-xl" />
+      <div className="absolute -top-6 -right-6 w-24 h-24 bg-violet-500/5 dark:bg-violet-500/10 rounded-full blur-2xl" />
+      <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-xl" />
 
       <div className="relative z-10 flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-violet-100 rounded-xl text-violet-600">
+            <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-xl text-violet-600 dark:text-violet-400">
               <Target size={18} />
             </div>
             <div>
-              <h4 className="font-bold text-slate-800 text-sm">Dự báo tháng tới</h4>
+              <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">Dự báo tháng tới</h4>
               <p className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
                 <Sparkles size={10} /> AI Prediction
               </p>
@@ -69,18 +70,18 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
           {/* Confidence Badge */}
           <div className="text-right">
             <span className="text-[10px] text-slate-400 font-bold uppercase">Độ tin cậy</span>
-            <p className={`text-lg font-black ${confidence > 70 ? 'text-emerald-600' : confidence > 40 ? 'text-amber-600' : 'text-slate-400'}`}>
+            <p className={`text-lg font-black ${confidence > 70 ? 'text-emerald-600 dark:text-emerald-500' : confidence > 40 ? 'text-amber-600 dark:text-amber-500' : 'text-slate-400'}`}>
               {confidence}%
             </p>
           </div>
         </div>
 
         {/* Main Prediction */}
-        <div className="bg-white/80 backdrop-blur rounded-xl p-4 mb-4 border border-white/50 shadow-sm relative overflow-hidden">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-4 mb-4 border border-white/50 dark:border-white/5 shadow-sm relative overflow-hidden">
             {/* Phase Badge (If available) */}
             {phaseConfig && (
-              <div className={`absolute top-0 right-0 px-2.5 py-1 ${phaseConfig.bg} rounded-bl-xl`}>
-                 <div className={`flex items-center gap-1.5 ${phaseConfig.color}`}>
+              <div className={`absolute top-0 right-0 px-2.5 py-1 ${phaseConfig.bg} dark:bg-opacity-20 rounded-bl-xl`}>
+                 <div className={`flex items-center gap-1.5 ${phaseConfig.color} dark:brightness-110`}>
                     <PhaseIcon size={10} strokeWidth={3} />
                     <span className="text-[9px] font-black tracking-wider">{phaseConfig.label}</span>
                  </div>
@@ -90,7 +91,7 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
           <div className="flex items-end justify-between mt-2">
             <div>
               <p className="text-xs text-slate-400 font-semibold mb-1">Doanh thu dự kiến</p>
-              <p className="text-2xl font-black text-slate-900 tracking-tight">
+              <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 {predictedRevenue.toLocaleString()} đ
               </p>
             </div>
@@ -103,7 +104,7 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
 
         {/* Sub metrics */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-white/60 rounded-lg p-3 border border-white/50 relative">
+          <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3 border border-white/50 dark:border-white/5 relative">
             {/* Warning for Expense Growth */}
             {analysis?.quality === 'warning' && (
                 <div className="absolute top-1 right-1 text-amber-500 tooltip" title="Chi phí tăng nhanh hơn doanh thu">
@@ -111,11 +112,11 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
                 </div>
             )}
             <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Chi phí dự kiến</p>
-            <p className="text-sm font-bold text-slate-700">{predictedExpense.toLocaleString()} đ</p>
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{predictedExpense.toLocaleString()} đ</p>
           </div>
-          <div className="bg-white/60 rounded-lg p-3 border border-white/50">
+          <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3 border border-white/50 dark:border-white/5">
              <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Lợi nhuận dự kiến</p>
-             <p className={`text-sm font-bold ${predictedProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+             <p className={`text-sm font-bold ${predictedProfit >= 0 ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-600 dark:text-rose-500'}`}>
                {predictedProfit.toLocaleString()} đ
              </p>
           </div>
@@ -123,10 +124,10 @@ export const ForecastCard: React.FC<ForecastCardProps> = React.memo(({
 
         {/* AI Explanation Text */}
         {analysis?.explanation && (
-            <div className="mt-auto bg-violet-500/5 rounded-lg p-3 border border-violet-500/10">
+            <div className="mt-auto bg-violet-500/5 dark:bg-violet-500/10 rounded-lg p-3 border border-violet-500/10 dark:border-violet-500/20">
                 <div className="flex gap-2">
-                    <Info size={14} className="text-violet-500 shrink-0 mt-0.5" />
-                    <p className="text-[11px] text-violet-700 font-medium leading-relaxed">
+                    <Info size={14} className="text-violet-500 dark:text-violet-400 shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-violet-700 dark:text-violet-300 font-medium leading-relaxed">
                         {analysis.explanation}
                     </p>
                 </div>
