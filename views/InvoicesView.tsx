@@ -41,13 +41,13 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
             <input 
               type="text" placeholder="Tìm theo số phòng, tên khách hoặc kỳ hóa đơn..." 
-              className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-6 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-12 pr-6 py-3 text-sm font-medium dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
               value={search} onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <Card className="!p-4 bg-indigo-50 !border-indigo-100 flex items-center gap-3">
-             <Wallet size={20} className="text-indigo-600"/>
-             <span className="text-xs font-bold text-indigo-800 uppercase">
+          <Card className="!p-4 bg-indigo-50 dark:bg-indigo-900/20 !border-indigo-100 dark:!border-indigo-500/20 flex items-center gap-3">
+             <Wallet size={20} className="text-indigo-600 dark:text-indigo-400"/>
+             <span className="text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase">
                Chưa thu: {formatCurrency(invoices.filter(i => !i.paid).reduce((a,c) => a+c.total, 0))}
              </span>
           </Card>
@@ -66,16 +66,16 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
               const tenant = tenants.find(t => t.id === room?.tenantId);
               
               return (
-                <Card key={invoice.id} className="!p-6 flex flex-col md:flex-row items-center gap-6 group hover:shadow-lg transition-all">
-                  <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center shrink-0 ${invoice.paid ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                <Card key={invoice.id} className="!p-6 flex flex-col md:flex-row items-center gap-6 group hover:shadow-lg transition-all dark:bg-slate-800 dark:border-slate-700">
+                  <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center shrink-0 ${invoice.paid ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'}`}>
                     <span className="text-[9px] font-bold uppercase opacity-70">Tháng</span>
                     <span className="text-xl font-black leading-none">{invoice.month}</span>
                   </div>
                   
                   <div className="flex-1 w-full text-center md:text-left">
                     <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1">
-                      <h4 className="text-lg font-bold text-slate-900 uppercase">{room?.name || 'Phòng đã xóa'}</h4>
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit mx-auto md:mx-0 ${invoice.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                      <h4 className="text-lg font-bold text-slate-900 dark:text-white uppercase">{room?.name || 'Phòng đã xóa'}</h4>
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase w-fit mx-auto md:mx-0 ${invoice.paid ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
                         {invoice.paid ? 'Đã thu' : 'Chờ thanh toán'}
                       </span>
                     </div>
@@ -86,7 +86,7 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
 
                   <div className="text-center md:text-right">
                     <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Thành tiền</p>
-                    <h3 className="text-xl font-black text-slate-900">{formatCurrency(invoice.total)}</h3>
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white">{formatCurrency(invoice.total)}</h3>
                   </div>
 
                   <div className="flex gap-2 w-full md:w-auto justify-center">
@@ -100,7 +100,7 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
                     </Button>
                     <Button 
                       onClick={async () => await updateDoc(doc(db, 'invoices', invoice.id), { paid: !invoice.paid })} 
-                      className={`!p-3 rounded-lg ${invoice.paid ? '!bg-emerald-500 hover:!bg-emerald-600 text-white' : '!bg-white border text-slate-400 hover:!bg-indigo-50 hover:text-indigo-600'}`}
+                      className={`!p-3 rounded-lg ${invoice.paid ? '!bg-emerald-500 hover:!bg-emerald-600 text-white' : '!bg-white dark:!bg-slate-800 border dark:border-slate-700 text-slate-400 hover:!bg-indigo-50 dark:hover:!bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'}`}
                       title={invoice.paid ? "Đánh dấu chưa thu" : "Đánh dấu đã thu"}
                     >
                       <CheckCircle size={20} />
@@ -108,7 +108,7 @@ const InvoicesView: React.FC<InvoicesViewProps> = ({ invoices, rooms, tenants, s
                     <Button 
                       onClick={async () => { if(confirm("Xóa hóa đơn này vĩnh viễn?")) await deleteDoc(doc(db, 'invoices', invoice.id)) }}
                       variant="ghost"
-                      className="!p-3 rounded-lg hover:!bg-rose-50 hover:!text-rose-600"
+                      className="!p-3 rounded-lg hover:!bg-rose-50 hover:!text-rose-600 dark:hover:!bg-rose-900/20"
                       title="Xóa hóa đơn"
                     >
                       <Trash2 size={20} />
