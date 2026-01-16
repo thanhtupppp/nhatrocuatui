@@ -462,11 +462,11 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tên phòng / Số phòng *</label>
-              <input type="text" placeholder="P.101" required value={roomForm.name} onChange={e => setRoomForm({...roomForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
+              <input type="text" placeholder="P.101" required value={roomForm.name} onChange={e => setRoomForm({...roomForm, name: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Loại phòng</label>
-              <select value={roomForm.type} onChange={e => setRoomForm({...roomForm, type: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all">
+              <select value={roomForm.type} onChange={e => setRoomForm({...roomForm, type: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all">
                 <option value="Phòng Thường">Phòng Thường</option>
                 <option value="Phòng VIP">Phòng VIP</option>
                 <option value="Phòng Đôi">Phòng Đôi</option>
@@ -479,27 +479,27 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Giá thuê (đ/tháng) *</label>
-              <input type="number" required value={roomForm.price} onChange={e => setRoomForm({...roomForm, price: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
+              <input type="number" required value={roomForm.price} onChange={e => setRoomForm({...roomForm, price: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tiền cọc (đ)</label>
-              <input type="number" value={roomForm.depositAmount} onChange={e => setRoomForm({...roomForm, depositAmount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
+              <input type="number" value={roomForm.depositAmount} onChange={e => setRoomForm({...roomForm, depositAmount: parseInt(e.target.value) || 0})} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 font-bold text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"/>
             </div>
           </div>
 
           {/* Meter Readings */}
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-4">
-            <p className="text-xs font-bold text-amber-700 uppercase flex items-center gap-2">
+          <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-xl space-y-4">
+            <p className="text-xs font-bold text-amber-700 dark:text-amber-500 uppercase flex items-center gap-2">
               <Zap size={14} /> Chỉ số đồng hồ (hiện tại)
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-amber-600 ml-1">Điện (kWh)</label>
-                <input type="number" value={roomForm.electricityMeter} onChange={e => setRoomForm({...roomForm, electricityMeter: parseInt(e.target.value) || 0})} className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:outline-none transition-all"/>
+                <label className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-500 ml-1">Điện (kWh)</label>
+                <input type="number" value={roomForm.electricityMeter} onChange={e => setRoomForm({...roomForm, electricityMeter: parseInt(e.target.value) || 0})} className="w-full bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900/30 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:outline-none transition-all"/>
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-blue-600 ml-1">Nước (m³)</label>
-                <input type="number" value={roomForm.waterMeter} onChange={e => setRoomForm({...roomForm, waterMeter: parseInt(e.target.value) || 0})} className="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all"/>
+                <label className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-500 ml-1">Nước (m³)</label>
+                <input type="number" value={roomForm.waterMeter} onChange={e => setRoomForm({...roomForm, waterMeter: parseInt(e.target.value) || 0})} className="w-full bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900/30 rounded-xl px-4 py-3 font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all"/>
               </div>
             </div>
           </div>
@@ -511,7 +511,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoice
               value={roomForm.description} 
               onChange={e => setRoomForm({...roomForm, description: e.target.value})} 
               placeholder="VD: Có ban công, máy lạnh, gần thang máy..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium min-h-[80px] resize-y focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 font-medium text-slate-900 dark:text-white min-h-[80px] resize-y focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all"
             />
           </div>
 

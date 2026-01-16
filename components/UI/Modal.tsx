@@ -39,10 +39,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidt
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity no-print" 
         onClick={onClose}
       />
-      <div className={`bg-white rounded-2xl w-full ${maxWidth} shadow-2xl transform transition-all duration-300 relative overflow-hidden print-reset ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/50 no-print">
-          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 p-2 rounded-xl transition-all">
+      <div className={`bg-white dark:bg-slate-900 rounded-2xl w-full ${maxWidth} shadow-2xl dark:shadow-slate-900/50 border dark:border-slate-800 transform transition-all duration-300 relative overflow-hidden print-reset ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 no-print">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
+          <button onClick={onClose} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 p-2 rounded-xl transition-all">
             <X size={20} />
           </button>
         </div>
