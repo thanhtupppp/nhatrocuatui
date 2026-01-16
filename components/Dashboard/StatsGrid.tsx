@@ -19,7 +19,7 @@ interface StatsGridProps {
 
 export const StatsGrid: React.FC<StatsGridProps> = React.memo(({ stats, currentMonth }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
       {stats.map((stat, i) => (
         <Card key={i} className={`!p-6 border hover:-translate-y-1 ${stat.border} transition-transform duration-300`}>
           <div className="flex justify-between items-start mb-4">

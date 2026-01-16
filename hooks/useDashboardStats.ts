@@ -1,76 +1,90 @@
+
 import { useMemo } from 'react';
 import { Room, Invoice, Expense } from '../types';
-import { RoomStatus } from '../constants/enums';
+import { getPreviousPeriod, isSamePeriod } from '../utils/dateUtils';
+import { sumByPeriod, toNum } from '../utils/financialUtils';
 
 interface DashboardStats {
   month: number;
   year: number;
   occupancyRate: number;
-  revenue: number;
+  totalBilled: number;     // Tổng cộng đã lập hóa đơn (Billed)
+  collectedRevenue: number; // Thực tế đã thu (Paid)
+  revenue: number;          // Phục vụ tương thích ngược (giữ là collectedRevenue)
   expense: number;
   profit: number;
   profitMargin: number;
   prevRevenue: number;
+  totalElectricityUsage: number;
+  totalElectricityCost: number;
+  totalWaterUsage: number;
+  totalWaterCost: number;
+  utilityElectricityBill: number; // Tiền điện thực trả cho nhà cung cấp
+  utilityWaterBill: number;       // Tiền nước thực trả cho nhà cung cấp
 }
 
 /**
- * Custom hook để tính toán Dashboard statistics
- * Tách logic ra khỏi component để dễ test và maintain
+ * Hook to calculate dashboard statistics
+ * Uses centralized pure functions for reliable financial data
  */
 export const useDashboardStats = (
   rooms: Room[],
   invoices: Invoice[],
-  expenses: Expense[]
+  expenses: Expense[],
+  month: number,
+  year: number
 ): DashboardStats => {
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
+  const currentPeriod = { month, year };
+  const prevPeriod = getPreviousPeriod(month, year);
 
-  // Previous Month Calculation
-  const prevMonth = month === 1 ? 12 : month - 1;
-  const prevYear = month === 1 ? year - 1 : year;
+  return useMemo(() => {
+    // 1. Occupancy Logic
+    const occupiedCount = rooms.filter(r => r.status === 'OCCUPIED').length;
+    const occupancyRate = rooms.length > 0 ? Math.round((occupiedCount / rooms.length) * 100) : 0;
 
-  const occupancyRate = useMemo(() => {
-    if (!rooms.length) return 0;
-    const occupiedCount = rooms.filter(r => r.status === RoomStatus.OCCUPIED).length;
-    return Math.round((occupiedCount / rooms.length) * 100);
-  }, [rooms]);
+    // 2. Revenue Calculations
+    const totalBilled = sumByPeriod(invoices, currentPeriod);
+    const collectedRevenue = sumByPeriod(invoices, currentPeriod, (inv) => inv.paid);
+    const prevRevenue = sumByPeriod(invoices, prevPeriod, (inv) => inv.paid);
 
-  const revenue = useMemo(() => {
-    return invoices
-      .filter(i => i.month === month && i.year === year && i.paid)
-      .reduce((sum, inv) => sum + inv.total, 0);
-  }, [invoices, month, year]);
+    // 3. Expense & Profit Logic
+    const expense = sumByPeriod(expenses, currentPeriod);
+    const profit = collectedRevenue - expense;
+    const profitMargin = collectedRevenue > 0 ? (profit / collectedRevenue) * 100 : 0;
 
-  const prevRevenue = useMemo(() => {
-    return invoices
-      .filter(i => i.month === prevMonth && i.year === prevYear && i.paid)
-      .reduce((sum, inv) => sum + inv.total, 0);
-  }, [invoices, prevMonth, prevYear]);
+    // 4. Utility Usage Aggregation
+    const periodInvoices = invoices.filter(i => isSamePeriod({ month: Number(i.month), year: Number(i.year) }, currentPeriod));
+    const totalElectricityUsage = periodInvoices.reduce((sum, i) => sum + toNum(i.electricityUsage), 0);
+    const totalElectricityCost = periodInvoices.reduce((sum, i) => sum + toNum(i.electricityCost), 0);
+    const totalWaterUsage = periodInvoices.reduce((sum, i) => sum + toNum(i.waterUsage), 0);
+    const totalWaterCost = periodInvoices.reduce((sum, i) => sum + toNum(i.waterCost), 0);
 
-  const expense = useMemo(() => {
-    const monthStr = String(month).padStart(2, '0');
-    const prefix = `${year}-${monthStr}`;
-    
-    return expenses
-      .filter(e => e.date.startsWith(prefix))
-      .reduce((sum, exp) => sum + exp.amount, 0);
-  }, [expenses, month, year]);
+    // 5. Utility Bill Aggregation (Cost paid to supplier)
+    const utilityElectricityBill = expenses
+      .filter(e => e.category === 'Điện' && isSamePeriod({ month: Number(e.month), year: Number(e.year) }, currentPeriod))
+      .reduce((sum, e) => sum + toNum(e.amount), 0);
+      
+    const utilityWaterBill = expenses
+      .filter(e => e.category === 'Nước' && isSamePeriod({ month: Number(e.month), year: Number(e.year) }, currentPeriod))
+      .reduce((sum, e) => sum + toNum(e.amount), 0);
 
-  const profit = useMemo(() => revenue - expense, [revenue, expense]);
-
-  const profitMargin = useMemo(() => {
-    return revenue > 0 ? (profit / revenue) * 100 : 0;
-  }, [revenue, profit]);
-
-  return {
-    month,
-    year,
-    occupancyRate,
-    revenue,
-    expense,
-    profit,
-    profitMargin,
-    prevRevenue
-  };
+    return {
+      month,
+      year,
+      occupancyRate,
+      totalBilled,
+      collectedRevenue,
+      revenue: collectedRevenue,
+      expense,
+      profit,
+      profitMargin,
+      prevRevenue,
+      totalElectricityUsage,
+      totalElectricityCost,
+      totalWaterUsage,
+      totalWaterCost,
+      utilityElectricityBill,
+      utilityWaterBill
+    };
+  }, [rooms, invoices, expenses, month, year]);
 };

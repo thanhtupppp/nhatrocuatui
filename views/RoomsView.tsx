@@ -6,29 +6,33 @@ import {
   doc, 
   updateDoc, 
   deleteDoc,
-  Timestamp 
+  Timestamp,
+  runTransaction
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Room, RoomStatus, Tenant, SystemSettings } from '../types';
+import { Room, RoomStatus, Tenant, SystemSettings, Invoice } from '../types';
 import Modal from '../components/UI/Modal';
 import EmptyState from '../components/UI/EmptyState';
-import { 
-  Search, Plus, DoorOpen, Zap, Droplets, 
-  Edit3, UserPlus, FileText, Sparkles, ArrowRight,
-  Receipt, Trash2, Info, LogOut
+import {
+  Search, Plus, DoorOpen, Zap, Droplets,
+  Sparkles, ArrowRight, ClipboardList, CheckSquare,
+  Edit3, Users, Save, X, History, Clock
 } from 'lucide-react';
-import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
 import { generateRentalContract } from '../services/aiService';
 import { formatCurrency } from '../utils/formatUtils';
+import RoomCard from '../components/Rooms/RoomCard';
+import BulkMeterModal from '../components/Rooms/BulkMeterModal';
+import BulkInvoiceModal from '../components/Rooms/BulkInvoiceModal';
 
 interface RoomsViewProps {
   rooms: Room[];
   tenants: Tenant[];
   settings: SystemSettings;
+  invoices: Invoice[];
 }
 
-const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
+const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings, invoices }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<RoomStatus | 'ALL'>('ALL');
   
@@ -36,10 +40,28 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
   const [isCheckinModalOpen, setIsCheckinModalOpen] = useState(false);
   const [isContractModalOpen, setIsContractModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [isBulkMeterModalOpen, setIsBulkMeterModalOpen] = useState(false);
+  const [isBulkInvoiceModalOpen, setIsBulkInvoiceModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [selectedRoomForCheckin, setSelectedRoomForCheckin] = useState<Room | null>(null);
   const [selectedRoomForInvoice, setSelectedRoomForInvoice] = useState<Room | null>(null);
+  const [selectedRoomForHistory, setSelectedRoomForHistory] = useState<Room | null>(null);
+
+  const [bulkMeterForm, setBulkMeterForm] = useState<Record<string, { newElectricity: number, newWater: number }>>({});
+
+  // Performance Optimization: Memoize tenants by room mapping
+  const tenantsByRoom = useMemo(() => {
+    const map: Record<string, Tenant[]> = {};
+    tenants.forEach(t => {
+      if (t.roomId) {
+        if (!map[t.roomId]) map[t.roomId] = [];
+        map[t.roomId].push(t);
+      }
+    });
+    return map;
+  }, [tenants]);
 
   const [contractDraft, setContractDraft] = useState("");
   const [isGeneratingContract, setIsGeneratingContract] = useState(false);
@@ -63,7 +85,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
     }).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
   }, [rooms, searchQuery, statusFilter]);
 
-  const handleSaveRoom = async (e: React.FormEvent) => {
+  const handleSaveRoom = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     try {
       if (editingRoom) {
@@ -76,7 +98,7 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
     } catch (err: any) { alert(err.message); }
   };
 
-  const handleDeleteRoom = async (room: Room) => {
+  const handleDeleteRoom = async (room: Room): Promise<void> => {
     if (room.status === RoomStatus.OCCUPIED) {
       alert("Không thể xóa phòng đang có khách thuê. Vui lòng trả phòng trước.");
       return;
@@ -88,59 +110,101 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
     }
   };
 
-  const handleCheckout = async (room: Room) => {
-    if (!room.tenantId) return;
-    if (confirm(`Xác nhận khách trả phòng ${room.name}? Hệ thống sẽ giải phóng phòng và cập nhật trạng thái khách thuê.`)) {
+  const handleCheckout = async (room: Room): Promise<void> => {
+    const tenantsInRoom = tenants.filter(t => t.roomId === room.id);
+    if (confirm(`Xác nhận tất cả khách (${tenantsInRoom.length} người) trả phòng ${room.name}?`)) {
       try {
-        await updateDoc(doc(db, 'rooms', room.id), { 
-          status: RoomStatus.AVAILABLE, 
-          tenantId: null 
+        await runTransaction(db, async (transaction) => {
+          const roomRef = doc(db, 'rooms', room.id);
+          
+          // Clear room info
+          transaction.update(roomRef, { 
+            status: RoomStatus.AVAILABLE, 
+            tenantId: null 
+          });
+          
+          // Clear all tenants in this room
+          tenantsInRoom.forEach(t => {
+            const tenantRef = doc(db, 'tenants', t.id);
+            transaction.update(tenantRef, { 
+              roomId: null,
+              isRepresentative: false
+            });
+          });
         });
-        await updateDoc(doc(db, 'tenants', room.tenantId), { 
-          roomId: null 
-        });
-        alert("Đã hoàn tất trả phòng.");
+        
+        alert("Đã hoàn tất trả phòng cho tất cả khách.");
       } catch (err: any) { alert(err.message); }
     }
   };
 
-  const handleGenerateContract = async (tenant: Tenant) => {
+  const handleGenerateContract = async (tenant: Tenant): Promise<void> => {
     if (!selectedRoomForCheckin) return;
     setIsGeneratingContract(true);
     try {
-      const draft = await generateRentalContract(
-        tenant.name, 
-        selectedRoomForCheckin.name, 
-        selectedRoomForCheckin.price, 
-        new Date().toLocaleDateString('vi-VN')
-      );
-      setContractDraft(draft || "");
+      // Import and use the standardized Vietnamese contract template
+      const { generateVietnameseContract } = await import('../utils/contractTemplate');
+      const draft = generateVietnameseContract({
+        tenant,
+        room: selectedRoomForCheckin,
+        settings,
+        contractDuration: 12
+      });
+      setContractDraft(draft);
+      
+      // Auto-save contract to tenant
+      await updateDoc(doc(db, 'tenants', tenant.id), { contractDraft: draft });
+      
       setIsContractModalOpen(true);
-    } catch (err) { alert("Lỗi soạn thảo AI."); } finally { setIsGeneratingContract(false); }
+    } catch (err) { 
+      console.error('Contract generation error:', err);
+      alert("Lỗi tạo hợp đồng. Vui lòng thử lại."); 
+    } finally { 
+      setIsGeneratingContract(false); 
+    }
   };
 
-  const handleCheckinComplete = async (tenantId: string) => {
+  const handleCheckinComplete = async (tenantId: string): Promise<void> => {
     if (!selectedRoomForCheckin) return;
     try {
-      await updateDoc(doc(db, 'rooms', selectedRoomForCheckin.id), { 
-        status: RoomStatus.OCCUPIED, 
-        tenantId: tenantId 
-      });
-      await updateDoc(doc(db, 'tenants', tenantId), { 
-        roomId: selectedRoomForCheckin.id, 
-        startDate: new Date().toISOString().split('T')[0] 
-      });
+      const isFirstTenant = selectedRoomForCheckin.status === RoomStatus.AVAILABLE;
+      
+      const tenantData: any = {
+        roomId: selectedRoomForCheckin.id,
+        startDate: new Date().toISOString().split('T')[0]
+      };
+
+      if (isFirstTenant) {
+        tenantData.isRepresentative = true;
+        await updateDoc(doc(db, 'rooms', selectedRoomForCheckin.id), { 
+          status: RoomStatus.OCCUPIED, 
+          tenantId: tenantId 
+        });
+      }
+
+      await updateDoc(doc(db, 'tenants', tenantId), tenantData);
+      
       setIsCheckinModalOpen(false);
       setSelectedRoomForCheckin(null);
     } catch (err: any) { alert(err.message); }
   };
 
-  const handleCreateInvoice = async (e: React.FormEvent) => {
+  const handleCreateInvoice = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!selectedRoomForInvoice) return;
     
-    const elecUsed = Math.max(0, invoiceForm.newElectricity - selectedRoomForInvoice.electricityMeter);
-    const waterUsed = Math.max(0, invoiceForm.newWater - selectedRoomForInvoice.waterMeter);
+    // Validation
+    if (invoiceForm.newElectricity < selectedRoomForInvoice.electricityMeter) {
+      alert(`Số điện mới (${invoiceForm.newElectricity}) không thể nhỏ hơn số cũ (${selectedRoomForInvoice.electricityMeter})`);
+      return;
+    }
+    if (invoiceForm.newWater < selectedRoomForInvoice.waterMeter) {
+      alert(`Số nước mới (${invoiceForm.newWater}) không thể nhỏ hơn số cũ (${selectedRoomForInvoice.waterMeter})`);
+      return;
+    }
+
+    const elecUsed = invoiceForm.newElectricity - selectedRoomForInvoice.electricityMeter;
+    const waterUsed = invoiceForm.newWater - selectedRoomForInvoice.waterMeter;
     
     const total = selectedRoomForInvoice.price + 
                   (elecUsed * settings.electricityRate) + 
@@ -150,28 +214,144 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
                   invoiceForm.otherFees;
 
     try {
-      await addDoc(collection(db, 'invoices'), {
-        roomId: selectedRoomForInvoice.id,
-        ...invoiceForm,
-        oldElectricity: selectedRoomForInvoice.electricityMeter,
-        oldWater: selectedRoomForInvoice.waterMeter,
-        rentAmount: selectedRoomForInvoice.price,
-        electricityRate: settings.electricityRate,
-        waterRate: settings.waterRate,
-        internetFee: settings.internetFee,
-        trashFee: settings.trashFee,
-        total,
-        paid: false,
-        createdAt: new Date().toISOString()
-      });
-      
-      await updateDoc(doc(db, 'rooms', selectedRoomForInvoice.id), {
-        electricityMeter: invoiceForm.newElectricity,
-        waterMeter: invoiceForm.newWater
+      await runTransaction(db, async (transaction) => {
+        const invoiceRef = doc(collection(db, 'invoices'));
+        const roomRef = doc(db, 'rooms', selectedRoomForInvoice.id);
+
+        transaction.set(invoiceRef, {
+          roomId: selectedRoomForInvoice.id,
+          ...invoiceForm,
+          oldElectricity: selectedRoomForInvoice.electricityMeter,
+          oldWater: selectedRoomForInvoice.waterMeter,
+          rentAmount: selectedRoomForInvoice.price,
+          electricityRate: settings.electricityRate,
+          waterRate: settings.waterRate,
+          internetFee: settings.internetFee,
+          trashFee: settings.trashFee,
+          electricityUsage: elecUsed,
+          electricityCost: elecUsed * settings.electricityRate,
+          waterUsage: waterUsed,
+          waterCost: waterUsed * settings.waterRate,
+          total,
+          paid: false,
+          createdAt: Timestamp.now()
+        });
+        
+        transaction.update(roomRef, {
+          electricityMeter: invoiceForm.newElectricity,
+          waterMeter: invoiceForm.newWater,
+          pendingElectricityMeter: null,
+          pendingWaterMeter: null
+        });
       });
       
       setIsInvoiceModalOpen(false);
       alert(`Đã tạo hóa đơn cho ${selectedRoomForInvoice.name}.`);
+    } catch (err: any) { alert(err.message); }
+  };
+
+  const handleOpenBulkMeters = (): void => {
+    const initialData: Record<string, { newElectricity: number, newWater: number }> = {};
+    rooms.filter(r => r.status === RoomStatus.OCCUPIED).forEach(r => {
+      initialData[r.id] = { 
+        newElectricity: r.pendingElectricityMeter || r.electricityMeter, 
+        newWater: r.pendingWaterMeter || r.waterMeter 
+      };
+    });
+    setBulkMeterForm(initialData);
+    setIsBulkMeterModalOpen(true);
+  };
+
+  const handleSaveBulkMeters = async (data: Record<string, { newElectricity: number, newWater: number }>): Promise<void> => {
+    try {
+      // Validation
+      const invalidRooms = rooms.filter(r => r.status === RoomStatus.OCCUPIED).filter(r => {
+        const entry = data[r.id];
+        return entry && (entry.newElectricity < r.electricityMeter || entry.newWater < r.waterMeter);
+      });
+
+      if (invalidRooms.length > 0) {
+        alert(`Lỗi: Có ${invalidRooms.length} phòng nhập chỉ số mới nhỏ hơn chỉ số cũ (${invalidRooms.map(r => r.name).join(', ')}). Vui lòng kiểm tra lại.`);
+        return;
+      }
+
+      await runTransaction(db, async (transaction) => {
+        Object.entries(data).map(([roomId, roomData]: [string, any]) => {
+          const roomRef = doc(db, 'rooms', roomId);
+          transaction.update(roomRef, {
+            pendingElectricityMeter: roomData.newElectricity,
+            pendingWaterMeter: roomData.newWater
+          });
+        });
+      });
+      setIsBulkMeterModalOpen(false);
+      alert("Đã chốt chỉ số tạm tính. Bạn có thể tiến hành lập hóa đơn loạt.");
+    } catch (err: any) { alert(err.message); }
+  };
+
+  const handleBulkInvoice = async (): Promise<void> => {
+    const occupiedRooms = rooms.filter(r => r.status === RoomStatus.OCCUPIED);
+    if (occupiedRooms.length === 0) {
+      alert("Không có phòng nào đang thuê để lập hóa đơn.");
+      return;
+    }
+
+    if (!confirm(`Xác nhận lập hóa đơn cho ${occupiedRooms.length} phòng đang thuê?`)) return;
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        occupiedRooms.forEach((room) => {
+          const newElec = room.pendingElectricityMeter ?? room.electricityMeter;
+          const newWater = room.pendingWaterMeter ?? room.waterMeter;
+          
+          const elecUsed = Math.max(0, newElec - room.electricityMeter);
+          const waterUsed = Math.max(0, newWater - room.waterMeter);
+          
+          const total = room.price + 
+                        (elecUsed * settings.electricityRate) + 
+                        (waterUsed * settings.waterRate) + 
+                        settings.internetFee + 
+                        settings.trashFee;
+
+          const invoiceRef = doc(collection(db, 'invoices'));
+          const roomRef = doc(db, 'rooms', room.id);
+
+          // 1. Create Invoice
+          transaction.set(invoiceRef, {
+            roomId: room.id,
+            month: invoiceForm.month,
+            year: invoiceForm.year,
+            oldElectricity: room.electricityMeter,
+            newElectricity: newElec,
+            electricityRate: settings.electricityRate,
+            oldWater: room.waterMeter,
+            newWater: newWater,
+            waterRate: settings.waterRate,
+            rentAmount: room.price,
+            internetFee: settings.internetFee,
+            trashFee: settings.trashFee,
+            otherFees: 0,
+            electricityUsage: elecUsed,
+            electricityCost: elecUsed * settings.electricityRate,
+            waterUsage: waterUsed,
+            waterCost: waterUsed * settings.waterRate,
+            total,
+            paid: false,
+            createdAt: Timestamp.now()
+          });
+
+          // 2. Update Room Meter and clear pending
+          transaction.update(roomRef, {
+            electricityMeter: newElec,
+            waterMeter: newWater,
+            pendingElectricityMeter: null,
+            pendingWaterMeter: null
+          });
+        });
+      });
+
+      setIsBulkInvoiceModalOpen(false);
+      alert(`Đã lập hóa đơn thành công cho ${occupiedRooms.length} phòng.`);
     } catch (err: any) { alert(err.message); }
   };
 
@@ -200,18 +380,35 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
             <option value={RoomStatus.OCCUPIED}>Đang Thuê</option>
           </select>
         </div>
-        <Button 
-          onClick={() => { 
-            setEditingRoom(null); 
-            setRoomForm({ name: '', price: 2000000, depositAmount: 0, type: 'Phòng Thường', description: '', electricityMeter: 0, waterMeter: 0 }); 
-            setIsRoomModalOpen(true); 
-          }} 
-          icon={Plus}
-        >
-          Thêm phòng
-        </Button>
+        <div className="w-full md:w-auto flex flex-wrap gap-3">
+          <Button 
+            onClick={handleOpenBulkMeters}
+            variant="secondary"
+            className="!bg-amber-50 !border-amber-200 !text-amber-700 hover:!bg-amber-100"
+            icon={ClipboardList}
+          >
+            Chốt chỉ số
+          </Button>
+          <Button 
+            onClick={() => setIsBulkInvoiceModalOpen(true)}
+            variant="secondary"
+            className="!bg-indigo-50 !border-indigo-200 !text-indigo-700 hover:!bg-indigo-100"
+            icon={CheckSquare}
+          >
+            Lập hóa đơn loạt
+          </Button>
+          <Button 
+            onClick={() => { 
+              setEditingRoom(null); 
+              setRoomForm({ name: '', price: 2000000, depositAmount: 0, type: 'Phòng Thường', description: '', electricityMeter: 0, waterMeter: 0 }); 
+              setIsRoomModalOpen(true); 
+            }} 
+            icon={Plus}
+          >
+            Thêm phòng
+          </Button>
+        </div>
       </div>
-
       {filteredRooms.length === 0 ? (
         <EmptyState 
           icon={DoorOpen} 
@@ -221,96 +418,39 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
           {filteredRooms.map(r => (
-            <div key={r.id} className="group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
-              <div className={`h-1.5 w-full ${r.status === RoomStatus.AVAILABLE ? 'bg-emerald-500' : 'bg-indigo-500'}`} />
-              
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{r.name}</h4>
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide mt-1 ${
-                      r.status === RoomStatus.AVAILABLE ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'
-                    }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${r.status === RoomStatus.AVAILABLE ? 'bg-emerald-500' : 'bg-indigo-500'}`}></span>
-                      {r.status === RoomStatus.AVAILABLE ? 'Trống' : 'Đang thuê'}
-                    </span>
-                  </div>
-                  <button onClick={() => { 
-                    setEditingRoom(r); 
-                    setRoomForm({ name: r.name, price: r.price, depositAmount: r.depositAmount || 0, type: r.type, description: r.description || '', electricityMeter: r.electricityMeter || 0, waterMeter: r.waterMeter || 0 }); 
-                    setIsRoomModalOpen(true); 
-                  }} className="text-slate-300 hover:text-indigo-600 transition-colors bg-transparent p-1">
-                    <Edit3 size={16} />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="bg-slate-50 p-3 rounded-xl">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Zap size={14} className="text-amber-500"/>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">Điện</span>
-                    </div>
-                    <p className="text-sm font-bold text-slate-900 font-mono">{r.electricityMeter}</p>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-xl">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Droplets size={14} className="text-blue-500"/>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">Nước</span>
-                    </div>
-                    <p className="text-sm font-bold text-slate-900 font-mono">{r.waterMeter}</p>
-                  </div>
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div>
-                    <p className="text-lg font-bold text-slate-900">{formatCurrency(r.price)}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">vnđ/tháng</p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    {r.status === RoomStatus.AVAILABLE ? (
-                      <Button 
-                        onClick={() => { setSelectedRoomForCheckin(r); setIsCheckinModalOpen(true); }} 
-                        className="!p-2.5 !h-auto !min-h-0 rounded-lg !bg-emerald-600 hover:!bg-emerald-700"
-                        title="Check-in khách mới"
-                      >
-                        <UserPlus size={18}/>
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          onClick={() => { 
-                            setSelectedRoomForInvoice(r); 
-                            setInvoiceForm({ ...invoiceForm, newElectricity: r.electricityMeter, newWater: r.waterMeter }); 
-                            setIsInvoiceModalOpen(true); 
-                          }}
-                          className="!p-2.5 !h-auto !min-h-0 rounded-lg"
-                          title="Lập hóa đơn"
-                        >
-                          <Receipt size={18} />
-                        </Button>
-                        <Button
-                          onClick={() => handleCheckout(r)}
-                          variant="danger"
-                          className="!p-2.5 !h-auto !min-h-0 rounded-lg"
-                          title="Trả phòng"
-                        >
-                          <LogOut size={18} />
-                        </Button>
-                      </>
-                    )}
-                    <Button 
-                      onClick={() => handleDeleteRoom(r)} 
-                      variant="ghost" 
-                      className="!p-2.5 !h-auto !min-h-0 rounded-lg hover:!bg-rose-50 hover:!text-rose-500"
-                      title="Xóa phòng"
-                    >
-                      <Trash2 size={18}/>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <RoomCard 
+              key={r.id}
+              room={r}
+              tenants={tenantsByRoom[r.id] || []}
+              onEdit={(room) => {
+                setEditingRoom(room); 
+                setRoomForm({ name: room.name, price: room.price, depositAmount: room.depositAmount || 0, type: room.type, description: room.description || '', electricityMeter: room.electricityMeter || 0, waterMeter: room.waterMeter || 0 }); 
+                setIsRoomModalOpen(true);
+              }}
+              onCheckin={(room) => {
+                setSelectedRoomForCheckin(room); 
+                setIsCheckinModalOpen(true);
+              }}
+              onCheckout={handleCheckout}
+              onInvoice={(room) => {
+                setSelectedRoomForInvoice(room); 
+                setInvoiceForm({ ...invoiceForm, newElectricity: room.electricityMeter, newWater: room.waterMeter }); 
+                setIsInvoiceModalOpen(true);
+              }}
+              onHistory={(room) => {
+                setSelectedRoomForHistory(room);
+                setIsHistoryModalOpen(true);
+              }}
+              onContract={(room) => {
+                const rep = tenantsByRoom[room.id]?.find(t => t.isRepresentative || t.id === room.tenantId);
+                if (rep) {
+                  setSelectedRoomForCheckin(room);
+                  handleGenerateContract(rep);
+                } else {
+                  alert('Không tìm thấy người đại diện phòng để tạo hợp đồng.');
+                }
+              }}
+            />
           ))}
         </div>
       )}
@@ -381,6 +521,55 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
         </form>
       </Modal>
 
+      {/* Check-in Modal */}
+      <Modal 
+        isOpen={isCheckinModalOpen} 
+        onClose={() => { setIsCheckinModalOpen(false); setSelectedRoomForCheckin(null); }} 
+        title={`Check-in: ${selectedRoomForCheckin?.name}`}
+      >
+        <div className="space-y-6">
+          <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+             <p className="text-xs text-indigo-600 font-bold uppercase mb-1">Đang chọn phòng</p>
+             <p className="text-lg font-black text-slate-900 uppercase">{selectedRoomForCheckin?.name}</p>
+             <p className="text-[10px] text-slate-500 uppercase mt-1">
+               {selectedRoomForCheckin?.status === RoomStatus.AVAILABLE ? 'Phòng đang trống' : 'Phòng đã có khách, đang thêm người'}
+             </p>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-[10px] font-black uppercase text-slate-400 ml-1">Chọn khách thuê từ danh sách chờ</p>
+            <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1">
+              {tenants.filter(t => !t.roomId).length === 0 ? (
+                <div className="text-center py-8">
+                  <Users size={32} className="mx-auto text-slate-200 mb-2"/>
+                  <p className="text-sm text-slate-400 font-medium">Không có khách nào đang chờ</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Vui lòng đăng ký khách mới trước</p>
+                </div>
+              ) : (
+                tenants.filter(t => !t.roomId).map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleCheckinComplete(t.id)}
+                    className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-500 hover:shadow-md rounded-xl transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white text-slate-400 group-hover:bg-indigo-600 group-hover:text-white rounded-lg flex items-center justify-center font-bold transition-colors shadow-sm">
+                        {t.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-slate-900 uppercase group-hover:text-indigo-600 transition-colors">{t.name}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">{t.phone}</p>
+                      </div>
+                    </div>
+                    <ArrowRight size={18} className="text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all"/>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </Modal>
+
       {/* Các Modal khác giữ nguyên nội dung chuyên nghiệp đã xây dựng */}
       <Modal isOpen={isInvoiceModalOpen} onClose={() => setIsInvoiceModalOpen(false)} title={`Chốt tiền: ${selectedRoomForInvoice?.name}`}>
         <form onSubmit={handleCreateInvoice} className="space-y-4">
@@ -400,6 +589,174 @@ const RoomsView: React.FC<RoomsViewProps> = ({ rooms, tenants, settings }) => {
           </div>
           <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase shadow-lg">Xác nhận tạo hóa đơn</button>
         </form>
+      </Modal>
+
+      <BulkMeterModal 
+        isOpen={isBulkMeterModalOpen}
+        onClose={() => setIsBulkMeterModalOpen(false)}
+        rooms={rooms}
+        initialData={bulkMeterForm}
+        onSave={handleSaveBulkMeters}
+      />
+
+      <BulkInvoiceModal 
+        isOpen={isBulkInvoiceModalOpen}
+        onClose={() => setIsBulkInvoiceModalOpen(false)}
+        occupiedRoomsCount={rooms.filter(r => r.status === RoomStatus.OCCUPIED).length}
+        month={invoiceForm.month}
+        year={invoiceForm.year}
+        onMonthChange={(m) => setInvoiceForm({...invoiceForm, month: m})}
+        onYearChange={(y) => setInvoiceForm({...invoiceForm, year: y})}
+        onConfirm={handleBulkInvoice}
+      />
+
+      {/* Room History Modal */}
+      <Modal 
+        isOpen={isHistoryModalOpen} 
+        onClose={() => { setIsHistoryModalOpen(false); setSelectedRoomForHistory(null); }} 
+        title={`Lịch sử chỉ số: ${selectedRoomForHistory?.name}`}
+      >
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+          {invoices.filter(inv => inv.roomId === selectedRoomForHistory?.id).length === 0 ? (
+            <div className="text-center py-12">
+              <Clock size={48} className="mx-auto text-slate-200 mb-4"/>
+              <p className="text-slate-500 font-medium">Chưa có lịch sử hóa đơn cho phòng này</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {invoices
+                .filter(inv => inv.roomId === selectedRoomForHistory?.id)
+                .sort((a, b) => {
+                  if (a.year !== b.year) return b.year - a.year;
+                  return b.month - a.month;
+                })
+                .map((inv) => (
+                  <div key={inv.id} className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="bg-white px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                      <span className="text-xs font-black text-indigo-600 uppercase">Tháng {inv.month}/{inv.year}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${inv.paid ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                        {inv.paid ? 'Đã thu' : 'Chưa thu'}
+                      </span>
+                    </div>
+                    
+                    <div className="p-4 grid grid-cols-2 gap-4">
+                      {/* Electricity Detail */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <Zap size={12} className="text-amber-500" />
+                          <span className="text-[10px] font-black text-slate-400 uppercase">Điện (kWh)</span>
+                        </div>
+                        <div className="flex items-baseline justify-between bg-white/50 p-2 rounded-lg border border-slate-100">
+                          <div className="text-center">
+                            <p className="text-[8px] text-slate-400 font-bold uppercase">Cũ</p>
+                            <p className="text-xs font-bold text-slate-600">{inv.oldElectricity}</p>
+                          </div>
+                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="text-center">
+                            <p className="text-[8px] text-slate-400 font-bold uppercase">Mới</p>
+                            <p className="text-xs font-bold text-slate-900">{inv.newElectricity}</p>
+                          </div>
+                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="text-center">
+                            <p className="text-[8px] text-amber-500 font-bold uppercase">Dùng</p>
+                            <p className="text-xs font-black text-amber-600">
+                              {inv.electricityUsage || (inv.newElectricity - inv.oldElectricity)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Water Detail */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <Droplets size={12} className="text-blue-500" />
+                          <span className="text-[10px] font-black text-slate-400 uppercase">Nước (m³)</span>
+                        </div>
+                        <div className="flex items-baseline justify-between bg-white/50 p-2 rounded-lg border border-slate-100">
+                           <div className="text-center">
+                            <p className="text-[8px] text-slate-400 font-bold uppercase">Cũ</p>
+                            <p className="text-xs font-bold text-slate-600">{inv.oldWater}</p>
+                          </div>
+                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="text-center">
+                            <p className="text-[8px] text-slate-400 font-bold uppercase">Mới</p>
+                            <p className="text-xs font-bold text-slate-900">{inv.newWater}</p>
+                          </div>
+                          <div className="h-4 w-px bg-slate-200 self-center"></div>
+                          <div className="text-center">
+                            <p className="text-[8px] text-blue-500 font-bold uppercase">Dùng</p>
+                            <p className="text-xs font-black text-blue-600">
+                              {inv.waterUsage || (inv.newWater - inv.oldWater)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      {/* Contract Preview Modal */}
+      <Modal 
+        isOpen={isContractModalOpen} 
+        onClose={() => { setIsContractModalOpen(false); setContractDraft(''); }} 
+        title="Hợp đồng thuê phòng"
+        maxWidth="max-w-4xl"
+      >
+        <div className="space-y-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 max-h-[70vh] overflow-y-auto custom-scrollbar print:max-h-none print:overflow-visible print:border-none print:p-0">
+            <div className="contract-content text-sm leading-relaxed text-slate-800" style={{ fontFamily: 'Times New Roman, serif' }}>
+              {/* Header */}
+              <div className="text-center mb-8">
+                <p className="text-base font-bold uppercase tracking-wide">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                <p className="font-bold text-base">Độc lập - Tự do - Hạnh phúc</p>
+                <p className="text-lg">──────────────────</p>
+                <p className="text-xl font-bold uppercase mt-6 mb-2">HỢP ĐỒNG THUÊ PHÒNG TRỌ</p>
+                <p className="italic">Số: ......./HĐTP</p>
+              </div>
+
+              {/* Contract content rendered from draft */}
+              <div className="whitespace-pre-wrap" style={{ textAlign: 'justify', textIndent: '2em' }} dangerouslySetInnerHTML={{ 
+                __html: contractDraft
+                  .replace(/^CỘNG HÒA.*HĐTP\n*/gm, '') // Remove header (we render it separately)
+                  .replace(/══+/g, '<hr class="my-4 border-slate-300"/>')
+                  .replace(/━+/g, '<hr class="my-2 border-slate-200"/>')
+                  .replace(/──+/g, '<hr class="my-4 border-dashed border-slate-300"/>')
+                  .replace(/(ĐIỀU \d+:.*)/g, '<h3 class="font-bold text-base mt-6 mb-3 text-slate-900" style="text-indent:0">$1</h3>')
+                  .replace(/(BÊN [AB] \(.*?\):)/g, '<h4 class="font-bold mt-4 mb-2 text-slate-800" style="text-indent:0">$1</h4>')
+                  .replace(/^(Họ và tên:|Số CCCD|Ngày sinh:|Quê quán:|Điện thoại:|Nghề nghiệp:|Địa chỉ:)/gm, '<strong>$1</strong>')
+                  .replace(/\n/g, '<br/>')
+              }} />
+            </div>
+          </div>
+          <div className="flex justify-end gap-4 print:hidden">
+            <button 
+              onClick={() => window.print()} 
+              className="bg-slate-100 text-slate-600 px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"
+            >
+              🖨 In hợp đồng
+            </button>
+            <button 
+              onClick={async () => {
+                if (selectedRoomForCheckin) {
+                  const rep = tenantsByRoom[selectedRoomForCheckin.id]?.find(t => t.isRepresentative || t.id === selectedRoomForCheckin.tenantId);
+                  if (rep) {
+                    await updateDoc(doc(db, 'tenants', rep.id), { contractDraft });
+                    alert('Hợp đồng đã được lưu!');
+                    setIsContractModalOpen(false);
+                    setContractDraft('');
+                  }
+                }
+              }}
+              className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all"
+            >
+              💾 Lưu hợp đồng
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

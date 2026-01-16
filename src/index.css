@@ -42,6 +42,49 @@
     display: none !important;
   }
   
+  /* Hide sidebar, header, and other UI when printing */
+  aside, header, nav, .print\\:hidden {
+    display: none !important;
+  }
+  
+  /* Make main content full width */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  /* Contract-specific print styles */
+  .contract-content {
+    font-size: 12pt !important;
+    line-height: 1.6 !important;
+    color: black !important;
+    background: white !important;
+  }
+  
+  .contract-content h3 {
+    font-size: 13pt !important;
+    margin-top: 20pt !important;
+    margin-bottom: 10pt !important;
+  }
+  
+  .contract-content h4 {
+    font-size: 12pt !important;
+  }
+  
+  /* Modal print styles */
+  [role="dialog"] {
+    position: static !important;
+    transform: none !important;
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    border: none !important;
+  }
+  
   /* Reset fixed positioning and overflows for printing */
   .print-reset {
     position: static !important;
@@ -53,5 +96,11 @@
     padding: 0 !important;
     box-shadow: none !important;
     transform: none !important;
+  }
+  
+  /* Page settings */
+  @page {
+    size: A4;
+    margin: 2cm;
   }
 }

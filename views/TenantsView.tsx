@@ -6,7 +6,7 @@ import { Tenant, Room } from '../types';
 import Modal from '../components/UI/Modal';
 import EmptyState from '../components/UI/EmptyState';
 import { ImageUpload } from '../components/UI/ImageUpload';
-import { Search, Plus, Users, Phone, Shield, MapPin, Trash2, Edit3, Save, Calendar, User, Heart, Mail, Eye } from 'lucide-react';
+import { Search, Plus, Users, Phone, Shield, MapPin, Trash2, Edit3, Save, Calendar, User, Heart, Mail, Eye, Briefcase, Car, FileText } from 'lucide-react';
 import { formatCurrency, formatDate } from '../utils/formatUtils';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -27,9 +27,13 @@ interface TenantForm {
   gender: 'male' | 'female' | '';
   hometown: string;
   currentAddress: string;
+  occupation: string;
+  licensePlate: string;
+  vehicleType: string;
   emergencyContact: string;
   emergencyName: string;
   startDate: string;
+  notes: string;
 }
 
 const emptyForm: TenantForm = {
@@ -43,9 +47,13 @@ const emptyForm: TenantForm = {
   gender: '',
   hometown: '',
   currentAddress: '',
+  occupation: '',
+  licensePlate: '',
+  vehicleType: '',
   emergencyContact: '',
   emergencyName: '',
-  startDate: new Date().toISOString().split('T')[0]
+  startDate: new Date().toISOString().split('T')[0],
+  notes: ''
 };
 
 const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
@@ -107,9 +115,13 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
       gender: tenant.gender || '',
       hometown: tenant.hometown,
       currentAddress: tenant.currentAddress || '',
+      occupation: tenant.occupation || '',
+      licensePlate: tenant.licensePlate || '',
+      vehicleType: tenant.vehicleType || '',
       emergencyContact: tenant.emergencyContact || '',
       emergencyName: tenant.emergencyName || '',
-      startDate: tenant.startDate || new Date().toISOString().split('T')[0]
+      startDate: tenant.startDate || new Date().toISOString().split('T')[0],
+      notes: tenant.notes || ''
     });
     setIsModalOpen(true);
   };
@@ -286,6 +298,27 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Địa chỉ thường trú</label>
               <input type="text" placeholder="123 Nguyễn Văn Linh, Q.7" value={form.currentAddress} onChange={e => setForm({...form, currentAddress: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
             </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nghề nghiệp</label>
+              <input type="text" placeholder="Nhân viên văn phòng..." value={form.occupation} onChange={e => setForm({...form, occupation: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+            </div>
+          </div>
+
+          {/* Vehicle Section */}
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <h4 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+              <Car size={16} className="text-indigo-500" /> Thông tin phương tiện
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Loại xe</label>
+                <input type="text" placeholder="Honda Vision..." value={form.vehicleType} onChange={e => setForm({...form, vehicleType: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Biển số xe</label>
+                <input type="text" placeholder="59-X1 12345..." value={form.licensePlate} onChange={e => setForm({...form, licensePlate: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
+              </div>
+            </div>
           </div>
 
           {/* Emergency Contact */}
@@ -314,6 +347,10 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ngày bắt đầu thuê</label>
               <input type="date" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500"/>
             </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Ghi chú</label>
+              <textarea placeholder="Ví dụ: Khách ở sạch sẽ, hay đi làm về muộn..." rows={3} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-medium focus:ring-2 ring-indigo-500 resize-none"/>
+            </div>
           </div>
 
           <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold uppercase tracking-wider shadow-xl flex items-center justify-center gap-3 hover:bg-black transition-all">
@@ -325,73 +362,122 @@ const TenantsView: React.FC<TenantsViewProps> = ({ tenants, rooms }) => {
       {/* View Detail Modal */}
       <Modal isOpen={!!viewingTenant} onClose={() => setViewingTenant(null)} title="Chi tiết khách thuê">
         {viewingTenant && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-h-[85vh] overflow-y-auto pr-2 pb-4">
             {/* Header */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
-              <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center font-black text-2xl uppercase">
-                {viewingTenant.name.charAt(0)}
+            <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/50 rounded-2xl shadow-sm">
+              <div className="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-indigo-50">
+                {viewingTenant.name.charAt(0).toUpperCase()}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900">{viewingTenant.name}</h3>
-                <p className="text-sm text-slate-500">{viewingTenant.gender === 'male' ? 'Nam' : viewingTenant.gender === 'female' ? 'Nữ' : ''}</p>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold text-slate-900 truncate uppercase tracking-tight">{viewingTenant.name}</h3>
+                <div className="flex items-center gap-3 mt-1.5">
+                  <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase rounded-full">
+                    {viewingTenant.gender === 'male' ? 'Nam' : viewingTenant.gender === 'female' ? 'Nữ' : 'Chưa xác định'}
+                  </span>
+                  {rooms.find(r => r.id === viewingTenant.roomId) && (
+                    <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full">
+                      Phòng {rooms.find(r => r.id === viewingTenant.roomId)?.name}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Số điện thoại</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.phone}</p>
+            {/* Main Info Grid */}
+            <div className="grid grid-cols-2 gap-x-8 gap-y-6 px-1">
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Phone size={12} className="text-indigo-400"/> Số điện thoại</p>
+                <p className="text-sm font-bold text-slate-700">{viewingTenant.phone}</p>
               </div>
-              <div>
-                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Email</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.email || '-'}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Mail size={12} className="text-indigo-400"/> Email</p>
+                <p className="text-sm font-bold text-slate-700">{viewingTenant.email || 'Chưa cập nhật'}</p>
               </div>
-              <div>
-                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Số CCCD</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.idCard}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Shield size={12} className="text-indigo-400"/> Số CCCD / CMND</p>
+                <p className="text-sm font-bold text-slate-700 line-clamp-1">{viewingTenant.idCard}</p>
               </div>
-              <div>
-                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Ngày sinh</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.dateOfBirth || '-'}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Calendar size={12} className="text-indigo-400"/> Ngày sinh</p>
+                <p className="text-sm font-bold text-slate-700">{viewingTenant.dateOfBirth || 'Chưa cập nhật'}</p>
               </div>
-              <div className="col-span-2">
-                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Quê quán</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.hometown || '-'}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Briefcase size={12} className="text-indigo-400"/> Nghề nghiệp</p>
+                <p className="text-sm font-bold text-slate-700">{viewingTenant.occupation || 'Chưa cập nhật'}</p>
               </div>
-              <div className="col-span-2">
-                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Địa chỉ thường trú</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.currentAddress || '-'}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><Calendar size={12} className="text-indigo-400"/> Ngày bắt đầu thuê</p>
+                <p className="text-sm font-bold text-slate-700">{viewingTenant.startDate ? formatDate(viewingTenant.startDate) : 'Chưa cập nhật'}</p>
               </div>
             </div>
 
-            {/* CCCD Images */}
-            {(viewingTenant.idCardFrontImage || viewingTenant.idCardBackImage) && (
-              <div className="space-y-3">
-                <p className="text-xs text-slate-400 font-bold uppercase">Ảnh CCCD</p>
-                <div className="grid grid-cols-2 gap-4">
-                  {viewingTenant.idCardFrontImage && (
-                    <div>
-                      <p className="text-[10px] text-slate-400 mb-1">Mặt trước</p>
-                      <img src={viewingTenant.idCardFrontImage} alt="CCCD Front" className="w-full rounded-lg border"/>
-                    </div>
-                  )}
-                  {viewingTenant.idCardBackImage && (
-                    <div>
-                      <p className="text-[10px] text-slate-400 mb-1">Mặt sau</p>
-                      <img src={viewingTenant.idCardBackImage} alt="CCCD Back" className="w-full rounded-lg border"/>
-                    </div>
-                  )}
+            {/* Address Info */}
+            <div className="space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <div className="space-y-1">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><MapPin size={12} className="text-indigo-400"/> Quê quán</p>
+                <p className="text-sm font-bold text-slate-700">{viewingTenant.hometown || 'Chưa cập nhật'}</p>
+              </div>
+              <div className="space-y-1 pt-3 border-t border-slate-200/50">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5"><MapPin size={12} className="text-indigo-400"/> Địa chỉ thường trú</p>
+                <p className="text-sm font-bold text-slate-700 leading-relaxed">{viewingTenant.currentAddress || 'Chưa cập nhật'}</p>
+              </div>
+            </div>
+
+            {/* Vehicle Info */}
+            {(viewingTenant.vehicleType || viewingTenant.licensePlate) && (
+              <div className="grid grid-cols-2 gap-4 p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl shadow-sm">
+                <div className="space-y-1">
+                  <p className="text-[10px] text-indigo-400 font-black uppercase flex items-center gap-1.5"><Car size={12}/> Loại xe</p>
+                  <p className="text-sm font-bold text-indigo-900">{viewingTenant.vehicleType || 'Chưa cập nhật'}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-indigo-400 font-black uppercase flex items-center gap-1.5"><Car size={12}/> Biển số xe</p>
+                  <p className="text-sm font-bold text-indigo-900 uppercase">{viewingTenant.licensePlate || 'Chưa cập nhật'}</p>
                 </div>
               </div>
             )}
 
             {/* Emergency Contact */}
             {(viewingTenant.emergencyName || viewingTenant.emergencyContact) && (
-              <div className="p-4 bg-rose-50 rounded-xl">
-                <p className="text-xs text-rose-400 font-bold uppercase mb-2">Liên hệ khẩn cấp</p>
-                <p className="font-semibold text-slate-700">{viewingTenant.emergencyName}</p>
-                <p className="text-sm text-slate-500">{viewingTenant.emergencyContact}</p>
+              <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl shadow-sm">
+                <p className="text-[10px] text-rose-400 font-black uppercase flex items-center gap-1.5 mb-2"><Heart size={12}/> Liên hệ khẩn cấp</p>
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-bold text-rose-900">{viewingTenant.emergencyName || 'Chưa cập nhật'}</p>
+                  <p className="text-sm font-bold text-rose-600">{viewingTenant.emergencyContact}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Notes */}
+            {viewingTenant.notes && (
+              <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl shadow-sm">
+                <p className="text-[10px] text-amber-500 font-black uppercase flex items-center gap-1.5 mb-2"><FileText size={12}/> Ghi chú</p>
+                <p className="text-sm font-medium text-amber-800 leading-relaxed whitespace-pre-wrap">{viewingTenant.notes}</p>
+              </div>
+            )}
+
+            {/* CCCD Images - Enhanced Size */}
+            {(viewingTenant.idCardFrontImage || viewingTenant.idCardBackImage) && (
+              <div className="space-y-4 pt-2">
+                <p className="text-[10px] text-slate-400 font-black uppercase flex items-center gap-1.5 px-1"><Shield size={12} className="text-indigo-400"/> Hình ảnh CCCD</p>
+                <div className="grid grid-cols-1 gap-4">
+                  {viewingTenant.idCardFrontImage && (
+                    <div className="space-y-2">
+                      <p className="text-[10px] text-slate-400 font-black uppercase text-center">--- Mặt trước ---</p>
+                      <div className="relative group overflow-hidden rounded-2xl border-2 border-slate-100 shadow-lg">
+                        <img src={viewingTenant.idCardFrontImage} alt="CCCD Front" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"/>
+                      </div>
+                    </div>
+                  )}
+                  {viewingTenant.idCardBackImage && (
+                    <div className="space-y-2">
+                      <p className="text-[10px] text-slate-400 font-black uppercase text-center pt-2">--- Mặt sau ---</p>
+                      <div className="relative group overflow-hidden rounded-2xl border-2 border-slate-100 shadow-lg">
+                        <img src={viewingTenant.idCardBackImage} alt="CCCD Back" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"/>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
